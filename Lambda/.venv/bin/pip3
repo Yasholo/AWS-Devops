@@ -1,0 +1,8 @@
+#!/mnt/a57ccb77-a765-4dca-b87c-b337ac842dee/Sharedvm/Codes/DevOps/AWS-DevOps/Lambda/.venv/bin/python3
+# -*- coding: utf-8 -*-
+import re
+import sys
+from pip._internal.cli.main import main
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
