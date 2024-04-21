@@ -179,11 +179,19 @@ The reason for this is that we need one "appspec.yaml" file, which if you look a
 
 - All you need to do is create an appspec.yml file at the root of the repository and two bash scripts (start_container.sh and stop_container.sh). 
 <img src="readme/deployments6.png" />
+(make sure to put the start_container.sh and stop_container.sh in new scripts repository. )
 
 - You can refer to these files to get an idea about what we need to do in these scripts. (We are basically pulling our docker image from the docker hub which we created in our codebuild project, and the we are running the container in daemon mode.)
 <img src="readme/deployments7.png" />
 <img src="readme/deployments8.png" />
 <img src="readme/deployments9.png" />
+
+- Before we rerun our deployment, make sure you have docker installed on your ec2 instance(sudo apt install docker.io -y), we can put that command in the appspec.yml file aswell but lets do it manually for now.
+
+- Now we are all set! Let's retry new deployment with a new(latest) commit ID and hit "Create deployment".
+<img src="readme/deployments10.png" />
+
+
 
 
 ## Create an AWS CodePipeline
