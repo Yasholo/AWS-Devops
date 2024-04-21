@@ -172,9 +172,18 @@ To solve this fail, make sure your instance in running and in the instance the c
 - This time the deployment will fail on the 'Beforeinstall" step. 
 
 The reason for this is that we need one "appspec.yaml" file, which if you look at the github repository is available but it is not at the root of the repository. (i.e yasholo/AWS-Devops) [I have used a repository which has multiple repositories and our sample app has many parent repositories. You can avoid it by initialising a new github repository which contains only the required files and has appspec.yml at the root]
+
 <img src="readme/deployments5.png" />
 
-- Let's fix this issue.
+- Let's fix this issue. I am linking my [github repo](https://github.com/Yasholo/AWS-Devops.git) for your reference. 
+
+- All you need to do is create an appspec.yml file at the root of the repository and two bash scripts (start_container.sh and stop_container.sh). 
+<img src="readme/deployments6.png" />
+
+- You can refer to these files to get an idea about what we need to do in these scripts. (We are basically pulling our docker image from the docker hub which we created in our codebuild project, and the we are running the container in daemon mode.)
+<img src="readme/deployments7.png" />
+<img src="readme/deployments8.png" />
+<img src="readme/deployments9.png" />
 
 
 ## Create an AWS CodePipeline
