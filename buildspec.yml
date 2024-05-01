@@ -25,5 +25,5 @@ phases:
 artifacts:
   files:
     - '**/*'
-  base-directory: ../demo-python-flask-app
+  base-directory: ../simple-python-app
   name: demo-app
