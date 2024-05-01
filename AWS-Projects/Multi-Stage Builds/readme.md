@@ -26,8 +26,7 @@ First, let’s build the docker image without using the multi-stage build.
 
 Let’s write a Dockerfile to create a container image of our Calculator application:
 
-## 
-
+```
 #Dockerfile
 
 #Base Image
@@ -37,13 +36,13 @@ RUN apt-get update && apt-get install -y python3 python3-pip
 WORKDIR /app
 COPY calculator.py /app
 CMD ["python3", "calculator.py"]
-
-## 
+```
 
 To build the Docker image from this Dockerfile, navigate to the directory containing both the Dockerfile and calculator.py, and then run the following command (“simplecalculator” is the name I want to give to my Image):
 
-##
+```
 docker build -t simplecalculator .
+```
 
 Run the command “docker images” to see your image details
 
@@ -54,7 +53,7 @@ Now, let’s create the same docker image using the multi-stage build!
 
 Let’s write another Dockerfile for our multi-stage build.
 
-##
+```
 #Dockerfile
 
 #Base Image
@@ -69,12 +68,14 @@ FROM ubuntu AS runtime
 COPY --from=builder /app /app
 WORKDIR /app
 CMD ["python3", "calculator.py"]
-##
+
+```
 
 Let’s build it now:
 
-##
+```
 docker build -t calculator-app-multistage .
+```
 
 Run the command “docker images” to see your image details
 
