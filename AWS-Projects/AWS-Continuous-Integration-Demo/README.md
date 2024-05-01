@@ -208,17 +208,51 @@ Congratulations! You have learned to use CodeDeploy pretty well! Give yourself a
 In this step, we'll create an AWS CodePipeline to automate the continuous integration process for our Python application. AWS CodePipeline will orchestrate the flow of changes from our GitHub repository to the deployment of our application. Let's go ahead and set it up:
 
 - Go to the AWS Management Console and navigate to the AWS CodePipeline service.
+<img src="readme/Pipeline1.png" />
+
 - Click on the "Create pipeline" button.
-- Provide a name for your pipeline and click on the "Next" button.
-- For the source stage, select "GitHub" as the source provider.
-- Connect your GitHub account to AWS CodePipeline and select your repository.
+<img src="readme/Pipeline2.png" />
+
+- Provide a name for your pipeline and click on the "Next" button. (We will leave the rest settings as it is for now)
+<img src="readme/Pipeline3.png" />
+
+- For the source stage, select "GitHub" as the source provider. (Github (Version 2) is recommended for better security)
+<img src="readme/Pipeline4.png" />
+
+- Connect your GitHub account to AWS CodePipeline
+<img src="readme/Pipeline5.png" />
+<img src="readme/Pipeline6.png" />
+<img src="readme/Pipeline7.png" />
+<img src="readme/Pipeline8.png" />
+<img src="readme/Pipeline9.png" />
+<img src="readme/Pipeline10.png" />
+<img src="readme/Pipeline11.png" />
+<img src="readme/Pipeline12.png" />
+
+- Select your repository.
 - Choose the branch you want to use for your pipeline.
+<img src="readme/Pipeline13.png" />
+<img src="readme/Pipeline14.png" />
+In Trigger type, choose "No filter" for now.
+
 - In the build stage, select "AWS CodeBuild" as the build provider.
-- Create a new CodeBuild project by clicking on the "Create project" button.
+<img src="readme/Pipeline15.png" />
+
+- [Create a new CodeBuild project](https://www.linkedin.com/pulse/configuring-aws-codebuild-build-our-application-pushing-yash-kumar-rbr2c/) by clicking on the "Create project" button. 
 - Configure the CodeBuild project with the necessary settings for your Python application, such as the build environment,  build commands, and artifacts.
 - Save the CodeBuild project and go back to CodePipeline.
+- Or if you have an already built codebuild, use it from the dropdown list. Then, click Next.
+<img src="readme/Pipeline16.png" />
+
 - Continue configuring the pipeline stages, such as deploying your application using AWS Elastic Beanstalk or any other suitable deployment option.
+- We are choosing AWS CodeDeploy for now.
+(Make sure to do neccessary changes in your buildspec file.) 
+<img src="readme/Buildspecupdate.png" />
+<img src="readme/Pipeline17.png" />
+<img src="readme/Pipeline18.png" />
+
 - Review the pipeline configuration and click on the "Create pipeline" button to create your AWS CodePipeline.
+<img src="readme/Pipeline19.png" />
 
 Awesome job! We now have our pipeline ready to roll. Let's move on to the next step to set up AWS CodeBuild.
 
