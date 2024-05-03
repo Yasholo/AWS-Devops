@@ -234,6 +234,9 @@ Congratulations! You have learned to use CodeDeploy pretty well! Give yourself a
 
 
 ## Create an AWS CodePipeline
+
+<img src="readme/CICDpipeline.png" >
+
 In this step, we'll create an AWS CodePipeline to automate the continuous integration process for our Python application. AWS CodePipeline will orchestrate the flow of changes from our GitHub repository to the deployment of our application. Let's go ahead and set it up:
 
 This is a flow chart for our pipeline:
@@ -322,6 +325,7 @@ This is a flow chart for our pipeline:
 - Your Buildspec and Appspec file should be properly written. 
 - Try to use a fresh Github repository for your project for minimum errors and ease with dealing with file paths.
 - If you still face any problem feel free to [contact me](https://www.linkedin.com/in/yasholo), I will try my best to help you solve your errors :)
+- Do Close the port on which you are are running your application before trying to re-run it. (You can add a command in the script to close the port automatically)
 
 ## Trigger the Pipeline
 
