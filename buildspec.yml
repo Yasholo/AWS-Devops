@@ -25,5 +25,5 @@ phases:
 artifacts:
   files:
     - '**/*'
-  base-directory: ../simple-python-app
-  name: demo-app
+  base-directory: AWS-Projects/AWS-Continuous-Integration-Demo/simple-python-app
+  name: BuildArtifact
