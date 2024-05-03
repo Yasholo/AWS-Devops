@@ -1,0 +1,55 @@
+<mxfile host="Electron" modified="2024-05-03T11:01:12.499Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.16 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="UR-PAM8zEDs49DFEI3_D" version="22.1.16" type="device">
+  <diagram name="Page-1" id="d9nwX4eU6E4Pqsb8A4UD">
+    <mxGraphModel dx="2501" dy="2007" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pKKF4zN61G_WtO77_OUU-24" value="" style="rounded=1;whiteSpace=wrap;html=1;dashed=0;strokeColor=default;align=center;verticalAlign=top;fontFamily=Helvetica;fontSize=12;fontColor=default;fillColor=Orange;" vertex="1" parent="1">
+          <mxGeometry x="-66.25" y="-97.5" width="980" height="670" as="geometry" />
+        </mxCell>
+        <mxCell id="pKKF4zN61G_WtO77_OUU-17" value="" style="whiteSpace=wrap;html=1;verticalAlign=top;fillColor=lightgreen;dashed=0;gradientColor=none;" vertex="1" parent="1">
+          <mxGeometry x="-1.25" y="110" width="850" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="pKKF4zN61G_WtO77_OUU-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;" edge="1" parent="1" source="pKKF4zN61G_WtO77_OUU-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="237.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pKKF4zN61G_WtO77_OUU-3" value="&lt;b&gt;GITHUB&lt;/b&gt;" style="dashed=0;outlineConnect=0;html=1;align=center;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;shape=mxgraph.weblogos.github;strokeColor=default;fontFamily=Helvetica;fontSize=12;fontColor=default;fillColor=default;" vertex="1" parent="1">
+          <mxGeometry x="80" y="200" width="75" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="pKKF4zN61G_WtO77_OUU-4" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;CodeBuild&lt;/font&gt;&lt;/b&gt;" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.codebuild;fillColor=#759C3E;gradientColor=none;strokeColor=default;fontFamily=Helvetica;fontSize=12;fontColor=default;" vertex="1" parent="1">
+          <mxGeometry x="280" y="191" width="80" height="99" as="geometry" />
+        </mxCell>
+        <mxCell id="pKKF4zN61G_WtO77_OUU-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;" edge="1" parent="1" source="pKKF4zN61G_WtO77_OUU-5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="237.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pKKF4zN61G_WtO77_OUU-5" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;CodeDeploy&lt;/font&gt;&lt;/b&gt;" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.codedeploy;fillColor=#759C3E;gradientColor=none;strokeColor=default;fontFamily=Helvetica;fontSize=12;fontColor=default;" vertex="1" parent="1">
+          <mxGeometry x="480" y="186" width="80" height="103" as="geometry" />
+        </mxCell>
+        <mxCell id="pKKF4zN61G_WtO77_OUU-18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;" edge="1" parent="1" source="pKKF4zN61G_WtO77_OUU-6" target="pKKF4zN61G_WtO77_OUU-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pKKF4zN61G_WtO77_OUU-6" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;CodePipeline&lt;/font&gt;&lt;/b&gt;" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.codepipeline;fillColor=#759C3E;gradientColor=none;strokeColor=default;fontFamily=Helvetica;fontSize=12;fontColor=default;" vertex="1" parent="1">
+          <mxGeometry x="380" y="-70" width="87.5" height="111" as="geometry" />
+        </mxCell>
+        <mxCell id="pKKF4zN61G_WtO77_OUU-9" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;EC2&lt;/font&gt;&lt;/b&gt;" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.ec2;fillColor=#F58534;gradientColor=none;strokeColor=default;fontFamily=Helvetica;fontSize=12;fontColor=default;" vertex="1" parent="1">
+          <mxGeometry x="690" y="191" width="76.5" height="93" as="geometry" />
+        </mxCell>
+        <mxCell id="pKKF4zN61G_WtO77_OUU-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;" edge="1" parent="1" source="pKKF4zN61G_WtO77_OUU-20">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="520" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pKKF4zN61G_WtO77_OUU-20" value="&lt;b style=&quot;background-color: rgb(102, 255, 102);&quot;&gt;Docker Hub&lt;/b&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Docker.svg;dashed=0;strokeColor=default;verticalAlign=top;fontFamily=Helvetica;fontColor=default;fillColor=default;" vertex="1" parent="1">
+          <mxGeometry x="271.21999999999997" y="400" width="97.56" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="pKKF4zN61G_WtO77_OUU-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;fontFamily=Helvetica;fontSize=12;fontColor=default;" edge="1" parent="1" source="pKKF4zN61G_WtO77_OUU-4" target="pKKF4zN61G_WtO77_OUU-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
