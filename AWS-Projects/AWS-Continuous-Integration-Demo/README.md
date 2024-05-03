@@ -207,6 +207,11 @@ Congratulations! You have learned to use CodeDeploy pretty well! Give yourself a
 ## Create an AWS CodePipeline
 In this step, we'll create an AWS CodePipeline to automate the continuous integration process for our Python application. AWS CodePipeline will orchestrate the flow of changes from our GitHub repository to the deployment of our application. Let's go ahead and set it up:
 
+This is a flow chart for our pipeline:
+<img src="readme/CICD.png">
+
+### Pipeline uses AWS CodeBuild to build our Python application based on the specifications we define. We will push this application on docker hub. There is nothing you need to do manually just setup the Codebuild and it will take care of building and packaging our application for deployment. Then, the Pipeline configure CodeDeploy to take our code from docker hub and deploy the simple-python-flask application on the EC2 instance. I have done both CodeBuild and CodeDeploy projects individually, but AWS Pipeline combines all of it and automates all the stuff! And whenever we make an update to our Github repo the Pipelines roll back automatically!
+
 - Go to the AWS Management Console and navigate to the AWS CodePipeline service.
 <img src="readme/Pipeline1.png" />
 
@@ -232,13 +237,16 @@ In this step, we'll create an AWS CodePipeline to automate the continuous integr
 - Select your repository.
 - Choose the branch you want to use for your pipeline.
 <img src="readme/Pipeline13.png" />
+- In Trigger type, choose "No filter" for now. Then click on Next.
 <img src="readme/Pipeline14.png" />
-In Trigger type, choose "No filter" for now.
 
-- In the build stage, select "AWS CodeBuild" as the build provider.
+
+- In the build stage, Select "Skip build stage" since you're using a pre-existing CodeBuild project.
 <img src="readme/Pipeline15.png" />
 
-- [Create a new CodeBuild project](https://www.linkedin.com/pulse/configuring-aws-codebuild-build-our-application-pushing-yash-kumar-rbr2c/) by clicking on the "Create project" button. 
+- [Create a new CodeBuild project](https://www.linkedin.com/pulse/configuring-aws-codebuild-build-our-application-pushing-yash-kumar-rbr2c/) (Make sure to do neccessary changes in your buildspec file.) by clicking on the "Create project" button. 
+<img src="readme/Buildspecupdate.png" />
+
 - Configure the CodeBuild project with the necessary settings for your Python application, such as the build environment,  build commands, and artifacts.
 - Save the CodeBuild project and go back to CodePipeline.
 - Or if you have an already built codebuild, use it from the dropdown list. Then, click Next.
@@ -246,23 +254,40 @@ In Trigger type, choose "No filter" for now.
 
 - Continue configuring the pipeline stages, such as deploying your application using AWS Elastic Beanstalk or any other suitable deployment option.
 - We are choosing AWS CodeDeploy for now.
-(Make sure to do neccessary changes in your buildspec file.) 
-<img src="readme/Buildspecupdate.png" />
+- You can refer this article to create [CodeDeploy application](https://www.linkedin.com/pulse/configuring-aws-codedeploy-yash-kumar-qqfhf/?trackingId=Qpt5LoA%2FQceV3l3q3Ot0Sw%3D%3D)
+ 
 <img src="readme/Pipeline17.png" />
 <img src="readme/Pipeline18.png" />
 
 - Review the pipeline configuration and click on the "Create pipeline" button to create your AWS CodePipeline.
 <img src="readme/Pipeline19.png" />
 
-Awesome job! We now have our pipeline ready to roll. Let's move on to the next step to set up AWS CodeBuild.
+- Awesome job! We now have our pipeline ready to roll.
 
+- Your pipeline is successfully created and as you can see all stages have passed!
+<img src="readme/Pipeline20.png" />
+<img src="readme/final1.png">
+<img src="readme/final2.png">
+<img src="readme/final3.png">
 
-## Trigger the CI Process
+### [Note: There can be multiple instances when your pipeline fails! Don't dishearten yourself, keep trying and you will succedd! I myself donno how many times I failed when I was working on this project, there was a problem with my codedepploy stage and it took me days to solve it! I got frustrated too but I knew I could solve it so I kept trying :) Just don't give up]
 
-In this final step, we'll trigger the CI process by making a change to our GitHub repository. Let's see how it works:
+## Tips: 
+- Make sure your EC2 instance is up and running.
+- Inside EC2 make sure CodeDeploy agent is running.
+- AWS Pipeline usese S3 to store artifacts, make sure EC2, CodeDeploy, CodeBuild, CodePipeline all have access to S3 (Use IAM roles to do it).
+- Your Buildspec and Appspec file should be properly written. 
+- Try to use a fresh Github repository for your project for minimum errors and ease with dealing with file paths.
+- If you still face any problem feel free to [contact me](https://www.linkedin.com/in/yasholo), I will try my best to help you solve your errors :)
+
+## Trigger the Pipeline
+
+In this final step, we'll trigger the Pipeline by making a change to our GitHub repository. Let's see how it works:
 
 - Go to your GitHub repository and make a change to your Python application's source code. It could be a bug fix, a new feature, or any other change you want to introduce.
 - Commit and push your changes to the branch configured in your AWS CodePipeline.
 - Head over to the AWS CodePipeline console and navigate to your pipeline.
 - You should see the pipeline automatically kick off as soon as it detects the changes in your repository.
 - Sit back and relax while AWS CodePipeline takes care of the rest. It will fetch the latest code, trigger the build process with AWS CodeBuild, and deploy the application if you configured the deployment stage.
+
+# HURRAY! YOU DID IT! WE DID IT!
