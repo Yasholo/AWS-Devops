@@ -1,4 +1,4 @@
-# AWS Continuous Integration Demo
+# AWS-Continuous-Integration-Continuous-Deployment-Demo
 <img src="readme/CI-flowchart.png" />
 
 ## Set Up GitHub Repository
