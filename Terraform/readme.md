@@ -102,6 +102,7 @@ terraform destroy       Destroy previously-created infrastructure
 ```
 
 ## Workflow:
+<img src="readme/Terraform-workflow.png" >
 
 - Initialize Terraform: Start by running **terraform init** in your project directory. This initializes Terraform and downloads necessary provider plugins.
 
