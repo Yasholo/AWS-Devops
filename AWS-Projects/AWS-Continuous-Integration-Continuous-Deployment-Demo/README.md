@@ -124,7 +124,7 @@ In this step, we'll configure AWS CodeBuild to build our Python application base
 
 - So, Now you know how to make your own AWS Codebuild project Kudos to you!  Now go use this tool to make exciting CI projects!
 
-## COnfigure AWS CodeDeploy
+## Configure AWS CodeDeploy
 <img src="readme/CICD.png" />
 
 In this step, we'll configure AWS CodeDeploy.
