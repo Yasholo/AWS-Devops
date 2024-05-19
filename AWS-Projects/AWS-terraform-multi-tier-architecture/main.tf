@@ -42,12 +42,3 @@ module "database" {
 module "monitoring" {
   source = "./modules/monitoring"
 }
-
-# Output values
-output "web_server_ips" {
-  value = module.web.web_server_ips
-}
-
-output "database_endpoint" {
-  value = module.database.endpoint
-}
