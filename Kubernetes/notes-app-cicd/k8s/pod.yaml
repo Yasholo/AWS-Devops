@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: notes-app
+spec:
+  containers:
+  - name: notes-app
+    image: yasholo/notes-app:latest
+    ports:
+    - containerPort: 3000
