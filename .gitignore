@@ -7,3 +7,7 @@ terraform.tfstate
 terraform.tfstate.backup
 .terraform.tfstate.lock.info
 crash.log
+<<<<<<< HEAD
+=======
+*/.git
+>>>>>>> 6e8bd171fe96e96b10689827dc779a5e960d0c72
