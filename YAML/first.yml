@@ -1,0 +1,26 @@
+#Key : value
+name : Yash
+age : 22
+#Object
+server : 
+  name : "trainwithyash"
+  capacity : 50GB
+#List
+Social_media : 
+  - insta-yasholox
+  - linkedin-yasholo
+  - x-yasholo
+  - snapchat-yasholox
+#Multiline
+testing : |
+  This is
+  multiline
+  string
+#ListofObjects
+list_of_servers:
+  - server_1 : 
+      name : "ec2"
+      volume : 8gb
+  - server_2 :
+      name : "fargate"
+      volume : 5gb
