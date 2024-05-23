@@ -1,44 +1,101 @@
-main.tf 
+main.tf >>>
 
 # Configure AWS provider
 provider "aws" {
-  region = "us-east-1"  # Change to your desired region
+  region = var.region_name
 }
 
+# Include modules
+
+
 # Create VPC, subnets, internet gateway, route tables, etc.
+
 module "network" {
   source = "./modules/network"
 }
 
+
 # Presentation Layer: Launch web servers and load balancer
-module "presentation" {
+
+
+module "web" {
   source      = "./modules/web"
-  subnet_ids = module.network.public_subnet_ids
+  # subnet_ids = module.network.public_subnet_ids
 }
+
 
 # Application Layer: Launch application servers
+
 module "application" {
   source      = "./modules/application"
-  subnet_ids = module.network.private_subnet_ids
+  # subnet_ids = module.network.private_subnet_ids
 }
 
+
 # Data Layer: Launch RDS MySQL database
+
 module "database" {
   source = "./modules/database"
 }
 
+
 # Monitoring and Logging
+
 module "monitoring" {
   source = "./modules/monitoring"
 }
 
+output.tf >>>
 
-terraform.tfvars
+output "web_server_ips" {
+  value = module.web.web_server_ips
+  description = "The IP addresses of the web servers launched."
+}
+
+output "database_endpoint" {
+  value = module.database.endpoint
+  description = "The endpoint of the RDS MySQL database."
+}
+
+output "web_lb_dns_name" {
+  value = module.web.dns_name
+  description = "The DNS name of the Application Load Balancer for web servers."
+}
+
+output "app_lb_dns_name" {
+  value = module.application.dns_name
+  description = "The DNS name of the Application Load Balancer for application servers."
+}
+
+output "cloudwatch_logs_app" {
+  value = module.monitoring.app_logs_arn
+  description = "The ARN of the CloudWatch Log Group for application logs."
+}
+
+output "cloudwatch_logs_system" {
+  value = module.monitoring.system_logs_arn
+  description = "The ARN of the CloudWatch Log Group for system logs."
+}
+
+
+# In this rewritten output.tf file:
+
+#    The web_server_ips output provides the IP addresses of the web servers.
+#    The database_endpoint output provides the endpoint of the RDS MySQL database.
+#    The web_lb_dns_name output provides the DNS name of the Application Load Balancer for web servers.
+#    The app_lb_dns_name output provides the DNS name of the Application Load Balancer for application servers.
+#    The cloudwatch_logs_app output provides the ARN of the CloudWatch Log Group for application logs.
+#    The cloudwatch_logs_system output provides the ARN of the CloudWatch Log Group for system logs.
+
+# These outputs will be displayed after applying the Terraform configuration and can be useful for accessing and managing the deployed infrastructure. Adjust the descriptions as needed for clarity.
+
+
+terraform.tfvars >>>
 
 region_name                    = "us-east-1"
 instance_type                  = "t2.micro"
-ami_id                         = ""
-key_name                       = "terra"
+ami_id                         = "ami-04b70fa74e45c3917" # Specify your AMI ID here
+key_name                       = "Jobs"
 app_instance_name              = "multi-tier-app-instances"
 web_instance_name              = "multi-tier-web-instances"
 vpc_cidr_block                 = "10.0.0.0/16"
@@ -50,196 +107,294 @@ public_subnet1_name            = "multi-tier-web-subnet-1"
 public_subnet2_cidr            = "10.0.2.0/24"
 public_subnet2_name            = "multi-tier-web-subnet-2"
 private_subnet1_cidr           = "10.0.3.0/24"
-private_subnet1_name           = "mutli-tier-app-subnet-1"
+private_subnet1_name           = "multi-tier-app-subnet-1"
 private_subnet2_cidr           = "10.0.4.0/24"
 private_subnet2_name           = "multi-tier-app-subnet-2"
 private_db_subnet1_cidr        = "10.0.5.0/24"
-private_db_subnet1_name        = "mutli-tier-db-subnet-1"
+private_db_subnet1_name        = "multi-tier-db-subnet-1"
 private_db_subnet2_cidr        = "10.0.6.0/24"
-private_db_subnet2_name        = "mutli-tier-db-subnet-2"
+private_db_subnet2_name        = "multi-tier-db-subnet-2"
 az_1                           = "us-east-1a"
 az_2                           = "us-east-1b"
 public_rt_name                 = "multi-tier-public-route-table"
-private_rt_name                = "multi-tier-private-rote-table"
-alb_web                        = "mutli-tier-web-alb"
-alb_sg_web_name                = "mutli-tier-alg-sg-web"
+private_rt_name                = "multi-tier-private-route-table"
+alb_web                        = "multi-tier-web-alb"
+alb_sg_web_name                = "multi-tier-alg-sg-web"
 asg_sg_web_name                = "multi-tier-asg-sg-web"
-alb_app                        = "mutli-tier-app-lb"
+alb_app                        = "multi-tier-app-lb"
 alb_sg_app_name                = "multi-tier-alg-sg-app"
 asg_sg_app_name                = "multi-tier-asg-sg-app"
 web_tg_name                    = "multi-tier-web-target-group"
 app_tg_name                    = "multi-tier-app-target-group"
-asg_app_name                   = "mutli-tier-auto-scaling-grp-app"
+asg_app_name                   = "multi-tier-auto-scaling-grp-app"
 asg_web_name                   = "multi-tier-auto-scaling-grp-web"
 db_name                        = "mydatabase"
 db_sg_name                     = "multi-tier-db-sg"
 db_subnet_grp_name             = "multi-tier-db-subnet-grp"
-db_instance-class              = "db.t2.micro"
+db_instance                    = "db.t2.micro"
+db_username                    = "db_admin"
+db_password                    = "010password69-="
 
+variables.tf >>>
 
-###
-
-launch-template-web-name = "three-tier-launch-template-web"
-launch-template-app-name = "three-tier-launch-template-app"
-app-db-sg-name           = "three-tier-app-db"
-
-
-
-output.tf 
-
-output "web_server_ips" {
-  value = module.presentation.web_server_ips
+variable "region_name" {
+  description = "The AWS region where resources will be deployed"
+  type        = string
+  default     = "us-east-1"
 }
 
-output "database_endpoint" {
-  value = module.database.endpoint
+variable "instance_type" {
+  description = "The EC2 instance type for your instances"
+  type        = string
+  default     = "t2.micro"
 }
 
-./modules/application/main.tf
- 
-# Create ALB  security group for application servers
-
-resource "aws_security_group" "alb_app_sg" {
-  name = var.alb_sg_app_name
-  description = "ALB Security Group"
-  vpc_id = aws_vpc.main.id
-
-  # Define ingress and egress rules...
-  ingress {
-    description = "HTTP from Internet"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    security_groups = [aws_security_group.web_sg.id]
-  }
-
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = var.alb_sg_app_name
-  }
+variable "ami_id" {
+  description = "The ID of the Amazon Machine Image (AMI) to use for your instances"
+  type        = string
+  default     = "ami-04b70fa74e45c3917"
 }
 
-# Create ASG security group for application servers
-
-resource "aws_security_group" "asg_app_sg" {
-  name        = var.asg_sg_app_name
-  description = "ASG Security Group"
-  vpc_id      = aws_vpc.vpc.id
-
-  ingress {
-    description     = "HTTP from ALB"
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
-    security_groups = [aws_security_group.alb_app_sg.id]
-  }
-
-  ingress {
-    description     = "SSH From Anywhere or Your-IP"
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
-    security_groups = [aws_security_group.web_sg.id]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = var.asg_sg_app_name
-  }
+variable "key_name" {
+  description = "The name of the EC2 key pair to use for SSH access"
+  type        = string
+  default     = "Jobs"
 }
 
-# Launch EC2 instances for application servers
-resource "aws_instance" "app_servers" {
-  count                = 2
-  ami                  = var.ami_id  # Specify your AMI
-  instance_type        = var.instance_type
-  subnet_id            = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
-  security_group_ids   = [aws_security_group.alb_app_sg.id]
-  key_name             = var.key_name
-  
-  tag_specifications {
-
-    resource_type = "instance"
-    tags = {
-      Name = var.app_instance_name
-    }
-  }
-
-  # Specify user data to configure application servers...
+variable "app_instance_name" {
+  description = "The name tag for application instances"
+  type        = string
+  default     = "multi-tier-app-instances"
 }
 
-# Create Application Load Balancer
-resource "aws_lb" "app_lb" {
-  name               = var.alb_app 
-  internal           = false
-  load_balancer_type = "application"
-  subnets            =  [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
-  security_groups    = [aws_security_group.alb_app_sg.id]
-  load_balancer_arn  = aws_lb.app_lb.arn
+variable "web_instance_name" {
+  description = "The name tag for web instances"
+  type        = string
+  default     = "multi-tier-web-instances"
 }
 
-# Create Auto Scaling Group 
-
-resource "aws_autoscaling_group" "asg_app" {
-  name                = var.asg_sg_app_name 
-  desired_capacity    = 2
-  max_size            = 4
-  min_size            = 1
-  target_group_arns   = [aws_lb_target_group.target-group-app.arn]
-  health_check_type   = "EC2"
-  vpc_zone_identifier = [aws_subnet.app-subnet1.id, aws_subnet.app-subnet2.id]
-
-
-  launch_template {
-    id      = aws_launch_template.template-app.id
-    version = aws_launch_template.template-app.latest_version
-  }
+variable "vpc_cidr_block" {
+  description = "The CIDR block for the VPC"
+  type        = string
+  default     = "10.0.0.0/16"
 }
 
-# Create target group for web servers
-resource "aws_lb_target_group" "app_target_group" {
-  name     = var.app_target_group
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
-
-  health_check {
-    path = "/"
-    matcher = 200
-  }
+variable "vpc_name" {
+  description = "The name tag for the VPC"
+  type        = string
+  default     = "multi-tier-vpc"
 }
 
-# Attach web servers to target group
-resource "aws_lb_target_group_attachment" "app_servers" {
-  type = "forward"
-  target_group_arn = aws_lb_target_group.app_target_group.arn
-  target_id        = aws_instance.app_servers.*.id
-  port             = 80
+variable "igw_name" {
+  description = "The name tag for the Internet Gateway"
+  type        = string
+  default     = "multi-tier-igw"
+}
+
+variable "nat_gw_name" {
+  description = "The name tag for the NAT Gateway"
+  type        = string
+  default     = "multi-tier-nat-gw"
+}
+
+variable "public_subnet1_cidr" {
+  description = "The CIDR block for the first public subnet"
+  type        = string
+  default     = "10.0.1.0/24"
+}
+
+variable "public_subnet1_name" {
+  description = "The name tag for the first public subnet"
+  type        = string
+  default     = "multi-tier-web-subnet-1"
+}
+
+variable "public_subnet2_cidr" {
+  description = "The CIDR block for the second public subnet"
+  type        = string
+  default     = "10.0.2.0/24"
+}
+
+variable "public_subnet2_name" {
+  description = "The name tag for the second public subnet"
+  type        = string
+  default     = "multi-tier-web-subnet-2"
+}
+
+variable "private_subnet1_cidr" {
+  description = "The CIDR block for the first private subnet"
+  type        = string
+  default     = "10.0.3.0/24"
+}
+
+variable "private_subnet1_name" {
+  description = "The name tag for the first private subnet"
+  type        = string
+  default     = "multi-tier-app-subnet-1"
+}
+
+variable "private_subnet2_cidr" {
+  description = "The CIDR block for the second private subnet"
+  type        = string
+  default     = "10.0.4.0/24"
+}
+
+variable "private_subnet2_name" {
+  description = "The name tag for the second private subnet"
+  type        = string
+  default     = "multi-tier-app-subnet-2"
+}
+
+variable "private_db_subnet1_cidr" {
+  description = "The CIDR block for the first private database subnet"
+  type        = string
+  default     = "10.0.5.0/24"
+}
+
+variable "private_db_subnet1_name" {
+  description = "The name tag for the first private database subnet"
+  type        = string
+  default     = "multi-tier-db-subnet-1"
+}
+
+variable "private_db_subnet2_cidr" {
+  description = "The CIDR block for the second private database subnet"
+  type        = string
+  default     = "10.0.6.0/24"
+}
+
+variable "private_db_subnet2_name" {
+  description = "The name tag for the second private database subnet"
+  type        = string
+  default     = "multi-tier-db-subnet-2"
+}
+
+variable "az_1" {
+  description = "The availability zone for the first subnet"
+  type        = string
+  default     = "us-east-1a"
+}
+
+variable "az_2" {
+  description = "The availability zone for the second subnet"
+  type        = string
+  default     = "us-east-1b"
+}
+
+variable "public_rt_name" {
+  description = "The name tag for the public route table"
+  type        = string
+  default     = "multi-tier-public-route-table"
+}
+
+variable "private_rt_name" {
+  description = "The name tag for the private route table"
+  type        = string
+  default     = "multi-tier-private-route-table"
+}
+
+variable "alb_web" {
+  description = "The name tag for the web application load balancer"
+  type        = string
+  default     = "multi-tier-web-alb"
+}
+
+variable "alb_sg_web_name" {
+  description = "The name tag for the web application load balancer security group"
+  type        = string
+  default     = "multi-tier-alg-sg-web"
+}
+
+variable "asg_sg_web_name" {
+  description = "The name tag for the web auto scaling group security group"
+  type        = string
+  default     = "multi-tier-asg-sg-web"
+}
+
+variable "alb_app" {
+  description = "The name tag for the application load balancer"
+  type        = string
+  default     = "multi-tier-app-lb"
+}
+
+variable "alb_sg_app_name" {
+  description = "The name tag for the application load balancer security group"
+  type        = string
+  default     = "multi-tier-alg-sg-app"
+}
+
+variable "asg_sg_app_name" {
+  description = "The name tag for the application auto scaling group security group"
+  type        = string
+  default     = "multi-tier-asg-sg-app"
+}
+
+variable "web_tg_name" {
+  description = "The name tag for the web target group"
+  type        = string
+  default     = "multi-tier-web-target-group"
+}
+
+variable "app_tg_name" {
+  description = "The name tag for the application target group"
+  type        = string
+  default     = "multi-tier-app-target-group"
+}
+
+variable "asg_app_name" {
+  description = "The name tag for the application auto scaling group"
+  type        = string
+  default     = "multi-tier-auto-scaling-grp-app"
+}
+
+variable "asg_web_name" {
+  description = "The name tag for the web auto scaling group"
+  type        = string
+  default     = "multi-tier-auto-scaling-grp-web"
+}
+
+variable "db_name" {
+  description = "The name tag for the database instance"
+  type        = string
+  default     = "mydatabase"
+}
+
+variable "db_sg_name" {
+  description = "The name tag for the database security group"
+  type        = string
+  default     = "multi-tier-db-sg"
+}
+
+variable "db_subnet_grp_name" {
+  description = "The name tag for the database subnet group"
+  type        = string
+  default     = "multi-tier-db-subnet-grp"
+}
+
+variable "db_instance" {
+  description = "The instance class for the database"
+  type        = string
+  default     = "db.t2.micro"
+}
+
+variable "db_username" {
+  description = "The username for the database"
+  type        = string
+}
+
+variable "db_password" {
+  description = "The password for the database"
+  type        = string
 }
 
 
-./modules/web/main.tf
+./modules/web/main.tf >>>
 
 # Create security group for web servers
-
 resource "aws_security_group" "web_sg" {
-  name = var.alb_sg_web_name
-  description = "ALB Security Group"
-  vpc_id = aws_vpc.main.id
+  name        = var.alb_sg_web_name
+  description = "ALB Security Group for Web Servers"
+  vpc_id      = module.network.aws_vpc.main.id
 
   # Define ingress and egress rules...
   ingress {
@@ -249,7 +404,6 @@ resource "aws_security_group" "web_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
 
   egress {
     from_port   = 0
@@ -264,18 +418,16 @@ resource "aws_security_group" "web_sg" {
 }
 
 # Launch EC2 instances for web servers
-
 resource "aws_instance" "web_servers" {
   count                = 2
   ami                  = var.ami_id  # Specify your AMI
   instance_type        = var.instance_type
   key_name             = var.key_name
-  subnet_id            = [aws_subnet.public-subnet-1.id, aws_subnet.public-subnet-2.id]
+  subnet_id            = [module.network.public_subnet_ids[0], module.network.public_subnet_ids[1]]
   security_group_ids   = [aws_security_group.web_sg.id]
 
   user_data = filebase64("user_data.sh")
   tag_specifications {
-
     resource_type = "instance"
     tags = {
       Name = var.web_instance_name
@@ -285,19 +437,17 @@ resource "aws_instance" "web_servers" {
   # Specify user data to configure web servers...
 }
 
-
 # Create Auto Scaling Security Group 
-
-resource "aws_security_group" "asg-security-group-web" {
+resource "aws_security_group" "asg_security_group_web" {
   name        = var.asg_sg_web_name 
-  description = "ASG Security Group"
-  vpc_id      = aws_vpc.vpc.id
+  description = "ASG Security Group for Web Servers"
+  vpc_id      = module.network.aws_vpc.main.id
 
   ingress {
-    description     = "HTTP from ALB"
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
+    description = "HTTP from ALB"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
     security_groups = [aws_security_group.web_sg.id]
   }
 
@@ -327,9 +477,12 @@ resource "aws_lb" "web_lb" {
   name               = var.alb_web
   internal           = false
   load_balancer_type = "application"
-  subnets            = [aws_subnet.public-subnet-1.id, aws_subnet.public-subnet-2.id]
+  subnets            = module.network.public_subnet_ids
   security_groups    = [aws_security_group.web_sg.id]
-  load_balancer_arn  = aws_lb.web_lb.arn
+}
+
+output "dns_name" {
+  value = aws_lb.web_lb.dns_name
 }
 
 # Create Auto Scaling Group
@@ -338,257 +491,61 @@ resource "aws_autoscaling_group" "asg_web" {
   desired_capacity    = 2
   max_size            = 4
   min_size            = 1
-  target_group_arns   = [aws_lb_target_group.target-group-web.arn]
+  target_group_arns   = [module.network.aws_lb_target_group_web.arn]
   health_check_type   = "EC2"
-  vpc_zone_identifier = [aws_subnet.web-subnet1.id, aws_subnet.web-subnet2.id]
-
+  vpc_zone_identifier = module.network.public_subnet_ids
 
   launch_template {
-    id      = aws_launch_template.template-web.id
-    version = aws_launch_template.template-web.latest_version
+    id      = module.network.aws_launch_template_web.id
+    version = module.network.aws_launch_template_web.latest_version
   }
 }
 
 # Create target group for web servers
-
 resource "aws_lb_target_group" "web_target_group" {
-  name     = var.web_target_group
+  name     = var.web_tg_name
   port     = 80
   protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
+  vpc_id   = module.network.aws_vpc.main.id
 
   health_check {
-    path = "/"
-    matcher = 200
+    path     = "/"
+    matcher  = 200
   }
 }
 
 # Attach web servers to target group
 resource "aws_lb_target_group_attachment" "web_servers" {
-  type = "forward"
+  type             = "forward"
   target_group_arn = aws_lb_target_group.web_target_group.arn
   target_id        = aws_instance.web_servers.*.id
   port             = 80
 }
 
 
-./modules/network/main.tf
-
-# Create VPC
-
-resource "aws_vpc" "main" {
-  cidr_block = var.vpc_cidr_block
-  enable_dns_support = true
-  enable_dns_hostnames = true
-  tags = {
-    Name = var.vpc_name
-  }
-}
-
-# Create public subnet for Web Tier
-
-resource "aws_subnet" "public-subnet-1" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.public_subnet1_cidr
-  availability_zone       = var.az_1
-  map_public_ip_on_launch = true
-  tags = {
-    Name = var.public_subnet1_name
-  }
-}
-
-resource "aws_subnet" "public-subnet-2" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.public_subnet2_cidr
-  availability_zone       = var.az_2
-  map_public_ip_on_launch = true
-  tags = {
-    Name = var.public_subnet2_name
-  }
-}
+# In this rewritten web/main.tf file:
+#
+#    The security group, EC2 instance, ALB, ASG security group, ASG, target group, and their attachments are grouped together.
+#    Each resource is clearly defined with appropriate descriptions and tags.
+#    Dependencies between resources are maintained properly.
+#    The code is organized for better readability and maintainability.
 
 
-# Create private subnet for Application Tier
+./modules/application/main.tf >>>
 
-resource "aws_subnet" "private-subnet-1" {
-  vpc_id      = aws_vpc.main.id
-  cidr_block  = var.private_subnet1_cidr
-  availability_zone = var.az_1
-  map_public_ip_on_launch = false
-  
-  tags = {
-    Name = var.private_subnet1_name
-  }
-}
+# Create ALB security group for application servers
 
-resource "aws_subnet" "private-subnet-2" {
-  vpc_id      = aws_vpc.main.id
-  cidr_block  = var.private_subnet2_cidr
-  availability_zone = var.az_2
-  map_public_ip_on_launch = false
-
-  tags = {
-    Name = var.private_subnet2_name
-  }
-}
-
-# Create private subnet for Database Tier
-
-resource "aws_subnet" "private-db-subnet-1" {
-  vpc_id      = aws_vpc.main.id
-  cidr_block  = var.private_db_subnet1_cidr
-  availability_zone = var.az_1
-  tags = {
-    Name = var.private_db_subnet1_name
-  }
-}
-
-resource "aws_subnet" "private-db-subnet-2" {
-  vpc_id      = aws_vpc.main.id
-  cidr_block  = var.private_db_subnet2_cidr
-  availability_zone = var.az_2
-  tags = {
-    Name = var.private_db_subnet2_name
-  }
-}
-
-
-# Create internet gateway
-
-resource "aws_internet_gateway" "gw" {
-  vpc_id = aws_vpc.main.id
-  tags = {
-    Name = var.igw_name
-  }
-}
-
-# eip
-
-resource "aws_eip" "myeip" {
-  domain = "vpc"
-}
-
-# Create nat gateway
-
-resource "aws_nat_gateway" "nat_gw" {
-  allocation_id     = aws_eip.myeip.id
-  connectivity_type = "public"
-  subnet_id         = aws_subnet.public-subnet-1.id
-
-  tags = {
-    Name = var.nat_gw_name
-  }
-
-  depends_on = [aws_internet_gateway.gw]
-}
-
-# Attach internet gateway to VPC
-
-resource "aws_vpc_attachment" "gw_attachment" {
-  vpc_id       = aws_vpc.main.id
-  internet_gateway_id = aws_internet_gateway.gw.id
-}
-
-# Create route table for public subnet
-
-resource "aws_route_table" "public-route" {
-  vpc_id = aws_vpc.main.id
-}
-
-# Associate public subnet with public route table
-
-resource "aws_route_table_association" "public-rt-association-1" {
-  subnet_id      = aws_subnet.public-subnet-1.id
-  route_table_id = aws_route_table.public-route.id
-  depends_on = [aws_subnet.public-subnet-1]
-}
-
-resource "aws_route_table_association" "public-rt-association-2" {
-  subnet_id      = aws_subnet.public-subnet-2.id
-  route_table_id = aws_route_table.public-route.id
-  depends_on = [aws_subnet.public-subnet-2]
-}
-
-# Create route for internet gateway in public route table
-
-resource "aws_route" "public_internet_gateway" {
-  route_table_id         = aws_route_table.public-route.id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.gw.id
-}
-
-
-# Create route table for private subnet
-
-resource "aws_route_table" "private-route" {
-  vpc_id = aws_vpc.vpc.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.gw.id
-  }
-
-  tags = {
-    Name = var.private_rt_name
-  }
-}
-
-# Associate private subnet with private route table
-
-resource "aws_route_table_association" "private-rt-association-1" {
-  subnet_id      = aws_subnet.private-subnet-1.id
-  route_table_id = aws_route_table.private-route.id
-  depends_on = [aws_subnet.private-subnet-1]
-}
-
-resource "aws_route_table_association" "private-rt-association-2" {
-  subnet_id      = aws_subnet.private-subnet-2.id
-  route_table_id = aws_route_table.private-route.id
-  depends_on = [aws_subnet.private-subnet-2]
-}
-
-
-provider "aws" {
-  region = var.region_name
-}
-
-output "web-server-dns" {
-  value = aws_lb.web_lb.dns_name
-}
-
-
-./modules/database/main.tf
-
-# Create RDS MySQL instance
-
-resource "aws_db_instance" "database" {
-  allocated_storage    = 10
-  storage_type         = "gp2"
-  engine               = "mysql"
-  engine_version       = "5.7"
-  multi_az             = true
-  instance_class       = var.db_instance
-  name                 = var.db_name
-  username             = var.db_username
-  password             = var.db_password
-  db_subnet_group_name = aws_db_subnet_group.subnet_grp.name
-  vpc_security_group_ids = [aws_security_group.db_sg.id]
-  parameter_group_name = "default.mysql5.7"
-
-}
-
-# Create Database Security Group
-
-resource "aws_security_group" "db_sg" {
-  name        = var.db_sg_name
-  description = "DB SEcurity Group"
-  vpc_id      = aws_vpc.vpc.id
+resource "aws_security_group" "alb_app_sg" {
+  name        = var.alb_sg_app_name
+  description = "ALB Security Group for Application Servers"
+  vpc_id      = module.network.aws_vpc.main.id
 
   ingress {
-    from_port       = 3306
-    to_port         = 3306
+    description     = "Allow HTTP traffic from ALB"
+    from_port       = 80
+    to_port         = 80
     protocol        = "tcp"
-    security_groups = [aws_security_group.asg_app_sg.id]
+    security_groups = [aws_security_group.web_sg.id]
   }
 
   egress {
@@ -599,26 +556,265 @@ resource "aws_security_group" "db_sg" {
   }
 
   tags = {
-    Name = var.db_sg_name
+    Name = var.alb_sg_app_name
   }
 }
 
-# Create Database Subnet Group
+# Create ASG security group for application servers
+resource "aws_security_group" "asg_app_sg" {
+  name        = var.asg_sg_app_name
+  description = "ASG Security Group for Application Servers"
+  vpc_id      = module.network.aws_vpc.main.id
 
-resource "aws_db_subnet_group" "subnet_grp" {
-  name       = var.db_subnet_grp_name
-  subnet_ids = [aws_subnet.private-db-subnet-1.id,aws_subnet.private-db-subnet-2.id]
+  ingress {
+    description     = "Allow HTTP traffic from ALB"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_app_sg.id]
+  }
+
+  ingress {
+    description = "Allow SSH traffic from anywhere or your IP"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = {
-    Name = var.db_subnet_grp_name
+    Name = var.asg_sg_app_name
   }
 }
+
+# Launch EC2 instances for application servers
+resource "aws_instance" "app_servers" {
+  count             = 2
+  ami               = var.ami_id  # Specify your AMI
+  instance_type     = var.instance_type
+  subnet_id         = [module.network.aws_subnet.private_subnet_1.id, module.network.aws_subnet.private_subnet_2.id]
+  security_group_ids = [aws_security_group.alb_app_sg.id]
+  key_name          = var.key_name
+  
+  tags = {
+    Name = var.app_instance_name
+  }
+
+  # Specify user data to configure application servers...
+}
+
+# Create Application Load Balancer
+
+resource "aws_lb" "app_lb" {
+  name               = var.alb_app 
+  internal           = false
+  load_balancer_type = "application"
+  subnets            = [module.network.aws_subnet.private_subnet_1.id, module.network.aws_subnet.private_subnet_2.id]
+  security_groups    = [aws_security_group.alb_app_sg.id]
+}
+
+output "dns_name" {
+  value = aws_lb.app_lb.dns_name
+}
+
+
+# Create Auto Scaling Group 
+resource "aws_autoscaling_group" "asg_app" {
+  name                = var.asg_sg_app_name 
+  desired_capacity    = 2
+  max_size            = 4
+  min_size            = 1
+  target_group_arns   = [aws_lb_target_group.target-group-app.arn]
+  health_check_type   = "EC2"
+  vpc_zone_identifier = [module.network.aws_subnet.private_subnet_1.id, module.network.aws_subnet.private_subnet_2.id]
+
+  launch_template {
+    id      = aws_launch_template.template-app.id
+    version = aws_launch_template.template-app.latest_version
+  }
+}
+
+# Create target group for application servers
+resource "aws_lb_target_group" "app_target_group" {
+  name     = var.app_tg_name
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.main.id
+
+  health_check {
+    path     = "/"
+    matcher  = 200
+  }
+}
+
+# Attach application servers to target group
+resource "aws_lb_target_group_attachment" "app_servers" {
+  target_group_arn = aws_lb_target_group.app_target_group.arn
+  target_id        = aws_instance.app_servers[*].id
+  port             = 80
+}
+
+
+# In this rewritten application/main.tf file:
+
+#    The ALB security group and ASG security group for application servers are defined.
+#    EC2 instances for application servers are launched across private subnets.
+#    An Application Load Balancer (ALB) is created to distribute incoming application traffic.
+#    An Auto Scaling Group (ASG) is set up to automatically scale the number of application server instances based on demand.
+#    A target group for application servers is created and attached to the ALB.
+
+
+./modules/network/main.tf >>>
+
+# Create VPC
+resource "aws_vpc" "main" {
+  cidr_block           = var.vpc_cidr_block
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
+  tags = {
+    Name = var.vpc_name
+  }
+}
+
+# Create public subnet for Web Tier
+resource "aws_subnet" "public_subnet_1" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.public_subnet1_cidr
+  availability_zone = var.az_1
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = var.public_subnet1_name
+  }
+}
+
+resource "aws_subnet" "public_subnet_2" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.public_subnet2_cidr
+  availability_zone = var.az_2
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = var.public_subnet2_name
+  }
+}
+
+# Create private subnet for Application Tier
+resource "aws_subnet" "private_subnet_1" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_subnet1_cidr
+  availability_zone = var.az_1
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = var.private_subnet1_name
+  }
+}
+
+resource "aws_subnet" "private_subnet_2" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_subnet2_cidr
+  availability_zone = var.az_2
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = var.private_subnet2_name
+  }
+}
+
+# Create private subnet for Database Tier
+resource "aws_subnet" "private_db_subnet_1" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_db_subnet1_cidr
+  availability_zone = var.az_1
+
+  tags = {
+    Name = var.private_db_subnet1_name
+  }
+}
+
+resource "aws_subnet" "private_db_subnet_2" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_db_subnet2_cidr
+  availability_zone = var.az_2
+
+  tags = {
+    Name = var.private_db_subnet2_name
+  }
+}
+
+# Create internet gateway
+resource "aws_internet_gateway" "gw" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = var.igw_name
+  }
+}
+
+# Create NAT gateway
+resource "aws_nat_gateway" "nat_gw" {
+  allocation_id     = aws_eip.myeip.id
+  subnet_id         = aws_subnet.public_subnet_1.id
+
+  tags = {
+    Name = var.nat_gw_name
+  }
+
+  depends_on = [aws_internet_gateway.gw]
+}
+
+# Attach internet gateway to VPC
+resource "aws_vpc_attachment" "gw_attachment" {
+  vpc_id             = aws_vpc.main.id
+  internet_gateway_id = aws_internet_gateway.gw.id
+}
+
+# Create route table for public subnet
+resource "aws_route_table" "public_route" {
+  vpc_id = aws_vpc.main.id
+}
+
+# Associate public subnet with public route table
+resource "aws_route_table_association" "public_rt_association_1" {
+  subnet_id      = aws_subnet.public_subnet_1.id
+  route_table_id = aws_route_table.public_route.id
+}
+
+resource "aws_route_table_association" "public_rt_association_2" {
+  subnet_id      = aws_subnet.public_subnet_2.id
+  route_table_id = aws_route_table.public_route.id
+}
+
+# Create route for internet gateway in public route table
+resource "aws_route" "public_internet_gateway" {
+  route_table_id         = aws_route_table.public_route.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.gw.id
+}
+
+
+# In this rewritten network/main.tf file:
+
+#    Resources related to the VPC, subnets, internet gateway, NAT gateway, route tables, and associations are grouped together.
+#    Each resource is clearly defined with appropriate descriptions and tags.
+#    Dependencies between resources are maintained properly.
+#    The code is organized for better readability and maintainability.
+
 
 ./modules/monitoring/cloudwatch.tf
 
 # Define AWS provider
 provider "aws" {
-  region = "us-east-1"
+  region = var.region_name
 }
 
 # CloudWatch Log Group for application logs
@@ -633,8 +829,11 @@ resource "aws_cloudwatch_log_group" "system_logs" {
   retention_in_days = 30
 }
 
-# CloudWatch Log Group for security logs
-resource "aws_cloudwatch_log_group" "security
+output "app_logs_arn" {
+  value = aws_cloudwatch_log_group.app_logs.arn
+}
 
-
+output "system_logs_arn" {
+  value = aws_cloudwatch_log_group.system_logs.arn
+}
 

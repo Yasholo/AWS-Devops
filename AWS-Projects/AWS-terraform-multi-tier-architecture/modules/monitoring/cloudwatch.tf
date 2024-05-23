@@ -15,8 +15,10 @@ resource "aws_cloudwatch_log_group" "system_logs" {
   retention_in_days = 30
 }
 
-# CloudWatch Log Group for security logs
-resource "aws_cloudwatch_log_group" "security_logs" {
-  name              = "/security_logs"
-  retention_in_days = 30
+output "app_logs_arn" {
+  value = aws_cloudwatch_log_group.app_logs.arn
+}
+
+output "system_logs_arn" {
+  value = aws_cloudwatch_log_group.system_logs.arn
 }

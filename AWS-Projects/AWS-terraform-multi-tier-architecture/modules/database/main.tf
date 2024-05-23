@@ -1,3 +1,12 @@
+module "network" {
+  source = "../network"
+  # Define input variables as needed
+}
+
+module "application" {
+  source = "../application"
+}
+
 # Create RDS MySQL instance
 resource "aws_db_instance" "database" {
   allocated_storage    = 10
@@ -18,13 +27,13 @@ resource "aws_db_instance" "database" {
 resource "aws_security_group" "db_sg" {
   name        = var.db_sg_name
   description = "Database Security Group"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = module.network.aws_vpc.main.id
 
   ingress {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    security_groups = [aws_security_group.asg_app_sg.id]
+    security_groups = [module.application.aws_security_group.asg_app_sg.id]
   }
 
   egress {
@@ -42,17 +51,9 @@ resource "aws_security_group" "db_sg" {
 # Create Database Subnet Group
 resource "aws_db_subnet_group" "subnet_grp" {
   name       = var.db_subnet_grp_name
-  subnet_ids = [aws_subnet.private_db_subnet_1.id, aws_subnet.private_db_subnet_2.id]
+  subnet_ids = module.network.private_subnet_ids
 
   tags = {
     Name = var.db_subnet_grp_name
   }
 }
-
-
-# In this rewritten database/main.tf file:
-
-#    The resources related to RDS MySQL instance, database security group, and database subnet group are grouped together.
-#    Each resource is clearly defined with appropriate descriptions and tags.
-#    Dependencies between resources are maintained properly.
-#    The code is organized for better readability and maintainability.

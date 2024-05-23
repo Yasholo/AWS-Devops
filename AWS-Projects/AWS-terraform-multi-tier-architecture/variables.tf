@@ -13,7 +13,7 @@ variable "instance_type" {
 variable "ami_id" {
   description = "The ID of the Amazon Machine Image (AMI) to use for your instances"
   type        = string
-  default     = ""
+  default     = "ami-04b70fa74e45c3917"
 }
 
 variable "key_name" {
