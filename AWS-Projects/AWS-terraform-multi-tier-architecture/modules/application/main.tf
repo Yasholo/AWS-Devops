@@ -1,8 +1,13 @@
+module "network" {
+  source = "../network"
+  # Define input variables as needed
+}
+
 # Create ALB security group for application servers
 resource "aws_security_group" "alb_app_sg" {
   name        = var.alb_sg_app_name
   description = "ALB Security Group for Application Servers"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = var.network_module_outputs.aws_vpc.main.id
 
   ingress {
     description     = "Allow HTTP traffic from ALB"
@@ -28,7 +33,7 @@ resource "aws_security_group" "alb_app_sg" {
 resource "aws_security_group" "asg_app_sg" {
   name        = var.asg_sg_app_name
   description = "ASG Security Group for Application Servers"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = var.network_module_outputs.aws_vpc.main.id
 
   ingress {
     description     = "Allow HTTP traffic from ALB"
@@ -61,9 +66,9 @@ resource "aws_security_group" "asg_app_sg" {
 # Launch EC2 instances for application servers
 resource "aws_instance" "app_servers" {
   count             = 2
-  ami               = var.ami_id  # Specify your AMI
+  ami               = var.ami_id
   instance_type     = var.instance_type
-  subnet_id         = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
+  subnet_id         = [var.network_module_outputs.aws_subnet.private_subnet_1.id, var.network_module_outputs.aws_subnet.private_subnet_2.id]
   security_group_ids = [aws_security_group.alb_app_sg.id]
   key_name          = var.key_name
   
@@ -76,26 +81,30 @@ resource "aws_instance" "app_servers" {
 
 # Create Application Load Balancer
 resource "aws_lb" "app_lb" {
-  name               = var.alb_app 
+  name               = var.alb_app
   internal           = false
   load_balancer_type = "application"
-  subnets            = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
+  subnets            = [var.network_module_outputs.aws_subnet.private_subnet_1.id, var.network_module_outputs.aws_subnet.private_subnet_2.id]
   security_groups    = [aws_security_group.alb_app_sg.id]
+}
+
+output "dns_name" {
+  value = aws_lb.app_lb.dns_name
 }
 
 # Create Auto Scaling Group 
 resource "aws_autoscaling_group" "asg_app" {
-  name                = var.asg_sg_app_name 
+  name                = var.asg_sg_app_name
   desired_capacity    = 2
   max_size            = 4
   min_size            = 1
-  target_group_arns   = [aws_lb_target_group.target-group-app.arn]
+  target_group_arns   = [var.network_module_outputs.aws_lb_target_group_app.arn]
   health_check_type   = "EC2"
-  vpc_zone_identifier = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
+  vpc_zone_identifier = [var.network_module_outputs.aws_subnet.private_subnet_1.id, var.network_module_outputs.aws_subnet.private_subnet_2.id]
 
   launch_template {
-    id      = aws_launch_template.template-app.id
-    version = aws_launch_template.template-app.latest_version
+    id      = var.network_module_outputs.aws_launch_template_app.id
+    version = var.network_module_outputs.aws_launch_template_app.latest_version
   }
 }
 
@@ -104,7 +113,7 @@ resource "aws_lb_target_group" "app_target_group" {
   name     = var.app_tg_name
   port     = 80
   protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
+  vpc_id   = var.network_module_outputs.aws_vpc.main.id
 
   health_check {
     path     = "/"
@@ -115,9 +124,10 @@ resource "aws_lb_target_group" "app_target_group" {
 # Attach application servers to target group
 resource "aws_lb_target_group_attachment" "app_servers" {
   target_group_arn = aws_lb_target_group.app_target_group.arn
-  target_id        = aws_instance.app_servers.*.id
+  target_id        = aws_instance.app_servers[*].id
   port             = 80
 }
+
 
 
 # In this rewritten application/main.tf file:

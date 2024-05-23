@@ -11,9 +11,9 @@ resource "aws_vpc" "main" {
 
 # Create public subnet for Web Tier
 resource "aws_subnet" "public_subnet_1" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.public_subnet1_cidr
-  availability_zone = var.az_1
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnet1_cidr
+  availability_zone       = var.az_1
   map_public_ip_on_launch = true
 
   tags = {
@@ -22,9 +22,9 @@ resource "aws_subnet" "public_subnet_1" {
 }
 
 resource "aws_subnet" "public_subnet_2" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.public_subnet2_cidr
-  availability_zone = var.az_2
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnet2_cidr
+  availability_zone       = var.az_2
   map_public_ip_on_launch = true
 
   tags = {
@@ -34,9 +34,9 @@ resource "aws_subnet" "public_subnet_2" {
 
 # Create private subnet for Application Tier
 resource "aws_subnet" "private_subnet_1" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.private_subnet1_cidr
-  availability_zone = var.az_1
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.private_subnet1_cidr
+  availability_zone       = var.az_1
   map_public_ip_on_launch = false
 
   tags = {
@@ -45,9 +45,9 @@ resource "aws_subnet" "private_subnet_1" {
 }
 
 resource "aws_subnet" "private_subnet_2" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.private_subnet2_cidr
-  availability_zone = var.az_2
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.private_subnet2_cidr
+  availability_zone       = var.az_2
   map_public_ip_on_launch = false
 
   tags = {
@@ -87,8 +87,8 @@ resource "aws_internet_gateway" "gw" {
 
 # Create NAT gateway
 resource "aws_nat_gateway" "nat_gw" {
-  allocation_id     = aws_eip.myeip.id
-  subnet_id         = aws_subnet.public_subnet_1.id
+  allocation_id = aws_eip.myeip.id
+  subnet_id     = aws_subnet.public_subnet_1.id
 
   tags = {
     Name = var.nat_gw_name
@@ -125,6 +125,37 @@ resource "aws_route" "public_internet_gateway" {
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.gw.id
 }
+
+# Outputs
+output "vpc_id" {
+  value = aws_vpc.main.id
+}
+
+output "public_subnet_ids" {
+  value = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
+}
+
+output "private_subnet_ids" {
+  value = [aws_subnet.private_subnet_1.id, aws_subnet.private_subnet_2.id]
+}
+
+output "nat_gateway_ips" {
+  value = [aws_nat_gateway.nat_gw.public_ip]
+}
+
+# Assuming you have these resources defined in your network module
+output "aws_launch_template_web_id" {
+  value = aws_launch_template.web.id
+}
+
+output "aws_launch_template_web_latest_version" {
+  value = aws_launch_template.web.latest_version
+}
+
+output "aws_lb_target_group_web_arn" {
+  value = aws_lb_target_group.web.arn
+}
+
 
 
 # In this rewritten network/main.tf file:

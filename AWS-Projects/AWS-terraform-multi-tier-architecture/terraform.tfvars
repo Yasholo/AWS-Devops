@@ -1,6 +1,6 @@
 region_name                    = "us-east-1"
 instance_type                  = "t2.micro"
-ami_id                         = "" # Specify your AMI ID here
+ami_id                         = "ami-04b70fa74e45c3917" # Specify your AMI ID here
 key_name                       = "Jobs"
 app_instance_name              = "multi-tier-app-instances"
 web_instance_name              = "multi-tier-web-instances"

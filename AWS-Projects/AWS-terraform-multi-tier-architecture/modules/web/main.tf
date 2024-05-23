@@ -1,8 +1,13 @@
+module "network" {
+  source = "../network"
+  # Define input variables as needed
+}
+
 # Create security group for web servers
 resource "aws_security_group" "web_sg" {
   name        = var.alb_sg_web_name
   description = "ALB Security Group for Web Servers"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = var.network_module_outputs.aws_vpc.main.id
 
   # Define ingress and egress rules...
   ingress {
@@ -28,10 +33,10 @@ resource "aws_security_group" "web_sg" {
 # Launch EC2 instances for web servers
 resource "aws_instance" "web_servers" {
   count                = 2
-  ami                  = var.ami_id  # Specify your AMI
+  ami                  = var.ami_id
   instance_type        = var.instance_type
   key_name             = var.key_name
-  subnet_id            = [aws_subnet.public-subnet-1.id, aws_subnet.public-subnet-2.id]
+  subnet_id            = [var.network_module_outputs.public_subnet_ids[0], var.network_module_outputs.public_subnet_ids[1]]
   security_group_ids   = [aws_security_group.web_sg.id]
 
   user_data = filebase64("user_data.sh")
@@ -47,9 +52,9 @@ resource "aws_instance" "web_servers" {
 
 # Create Auto Scaling Security Group 
 resource "aws_security_group" "asg_security_group_web" {
-  name        = var.asg_sg_web_name 
+  name        = var.asg_sg_web_name
   description = "ASG Security Group for Web Servers"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = var.network_module_outputs.aws_vpc.main.id
 
   ingress {
     description = "HTTP from ALB"
@@ -75,7 +80,7 @@ resource "aws_security_group" "asg_security_group_web" {
   }
 
   tags = {
-    Name = var.asg_sg_web_name 
+    Name = var.asg_sg_web_name
   }
 }
 
@@ -84,8 +89,12 @@ resource "aws_lb" "web_lb" {
   name               = var.alb_web
   internal           = false
   load_balancer_type = "application"
-  subnets            = [aws_subnet.public-subnet-1.id, aws_subnet.public-subnet-2.id]
+  subnets            = var.network_module_outputs.public_subnet_ids
   security_groups    = [aws_security_group.web_sg.id]
+}
+
+output "dns_name" {
+  value = aws_lb.web_lb.dns_name
 }
 
 # Create Auto Scaling Group
@@ -94,13 +103,13 @@ resource "aws_autoscaling_group" "asg_web" {
   desired_capacity    = 2
   max_size            = 4
   min_size            = 1
-  target_group_arns   = [aws_lb_target_group.target-group-web.arn]
+  target_group_arns   = [var.network_module_outputs.aws_lb_target_group_web.arn]
   health_check_type   = "EC2"
-  vpc_zone_identifier = [aws_subnet.web-subnet1.id, aws_subnet.web-subnet2.id]
+  vpc_zone_identifier = var.network_module_outputs.public_subnet_ids
 
   launch_template {
-    id      = aws_launch_template.template-web.id
-    version = aws_launch_template.template-web.latest_version
+    id      = var.network_module_outputs.aws_launch_template_web.id
+    version = var.network_module_outputs.aws_launch_template_web.latest_version
   }
 }
 
@@ -109,7 +118,7 @@ resource "aws_lb_target_group" "web_target_group" {
   name     = var.web_tg_name
   port     = 80
   protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
+  vpc_id   = var.network_module_outputs.aws_vpc.main.id
 
   health_check {
     path     = "/"
@@ -124,6 +133,7 @@ resource "aws_lb_target_group_attachment" "web_servers" {
   target_id        = aws_instance.web_servers.*.id
   port             = 80
 }
+
 
 
 # In this rewritten web/main.tf file:
