@@ -140,7 +140,7 @@ output "private_subnet_ids" {
 }
 
 output "nat_gateway_ips" {
-  value = [aws_nat_gateway.nat_gw.public_ip]
+  value = aws_nat_gateway.nat_gw.public_ip
 }
 
 # Assuming you have these resources defined in your network module
@@ -154,6 +154,19 @@ output "aws_launch_template_web_latest_version" {
 
 output "aws_lb_target_group_web_arn" {
   value = aws_lb_target_group.web.arn
+}
+
+# Assuming you have these resources defined in your network module
+output "aws_launch_template_app_id" {
+  value = aws_launch_template.app.id
+}
+
+output "aws_launch_template_app_latest_version" {
+  value = aws_launch_template.app.latest_version
+}
+
+output "aws_lb_target_group_app_arn" {
+  value = aws_lb_target_group.app.arn
 }
 
 

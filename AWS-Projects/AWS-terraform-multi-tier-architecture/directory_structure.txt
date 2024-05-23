@@ -1,0 +1,18 @@
+root
+├── main.tf
+├── variables.tf
+├── terraform.tfvars
+├── modules
+│   ├── network
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   ├── application
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   ├── database
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   ├── monitoring
+│   │   ├── main.tf
+│   │   ├── variables.tf
+
