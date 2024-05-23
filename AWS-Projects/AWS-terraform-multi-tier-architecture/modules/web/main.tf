@@ -1,13 +1,8 @@
-module "network" {
-  source = "../network"
-  # Define input variables as needed
-}
-
 # Create security group for web servers
 resource "aws_security_group" "web_sg" {
   name        = var.alb_sg_web_name
   description = "ALB Security Group for Web Servers"
-  vpc_id      = var.network_module_outputs.aws_vpc.main.id
+  vpc_id      = module.network.aws_vpc.main.id
 
   # Define ingress and egress rules...
   ingress {
@@ -36,7 +31,7 @@ resource "aws_instance" "web_servers" {
   ami                  = var.ami_id
   instance_type        = var.instance_type
   key_name             = var.key_name
-  subnet_id            = [var.network_module_outputs.public_subnet_ids[0], var.network_module_outputs.public_subnet_ids[1]]
+  subnet_id            = [module.network.public_subnet_ids[0], module.network.public_subnet_ids[1]]
   security_group_ids   = [aws_security_group.web_sg.id]
 
   user_data = filebase64("user_data.sh")
@@ -54,7 +49,7 @@ resource "aws_instance" "web_servers" {
 resource "aws_security_group" "asg_security_group_web" {
   name        = var.asg_sg_web_name
   description = "ASG Security Group for Web Servers"
-  vpc_id      = var.network_module_outputs.aws_vpc.main.id
+  vpc_id      = module.network.aws_vpc.main.id
 
   ingress {
     description = "HTTP from ALB"
@@ -89,7 +84,7 @@ resource "aws_lb" "web_lb" {
   name               = var.alb_web
   internal           = false
   load_balancer_type = "application"
-  subnets            = var.network_module_outputs.public_subnet_ids
+  subnets            = module.network.public_subnet_ids
   security_groups    = [aws_security_group.web_sg.id]
 }
 
@@ -103,13 +98,13 @@ resource "aws_autoscaling_group" "asg_web" {
   desired_capacity    = 2
   max_size            = 4
   min_size            = 1
-  target_group_arns   = [var.network_module_outputs.aws_lb_target_group_web.arn]
+  target_group_arns   = [module.network.aws_lb_target_group_web.arn]
   health_check_type   = "EC2"
-  vpc_zone_identifier = var.network_module_outputs.public_subnet_ids
+  vpc_zone_identifier = module.network.public_subnet_ids
 
   launch_template {
-    id      = var.network_module_outputs.aws_launch_template_web.id
-    version = var.network_module_outputs.aws_launch_template_web.latest_version
+    id      = module.network.aws_launch_template_web.id
+    version = module.network.aws_launch_template_web.latest_version
   }
 }
 
@@ -118,7 +113,7 @@ resource "aws_lb_target_group" "web_target_group" {
   name     = var.web_tg_name
   port     = 80
   protocol = "HTTP"
-  vpc_id   = var.network_module_outputs.aws_vpc.main.id
+  vpc_id   = module.network.aws_vpc.main.id
 
   health_check {
     path     = "/"

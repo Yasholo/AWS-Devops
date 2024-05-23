@@ -42,22 +42,3 @@ variable "web_tg_name" {
   description = "Name of the target group for web servers"
   type        = string
 }
-
-variable "network_module_outputs" {
-  description = "Outputs from the network module"
-  type = object({
-    aws_vpc = object({
-      main = object({
-        id = string
-      })
-    })
-    public_subnet_ids = list(string)
-    aws_lb_target_group_web = object({
-      arn = string
-    })
-    aws_launch_template_web = object({
-      id = string
-      latest_version = string
-    })
-  })
-}

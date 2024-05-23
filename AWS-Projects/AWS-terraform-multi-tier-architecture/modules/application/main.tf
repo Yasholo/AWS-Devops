@@ -1,13 +1,8 @@
-module "network" {
-  source = "../network"
-  # Define input variables as needed
-}
-
 # Create ALB security group for application servers
 resource "aws_security_group" "alb_app_sg" {
   name        = var.alb_sg_app_name
   description = "ALB Security Group for Application Servers"
-  vpc_id      = var.network_module_outputs.aws_vpc.main.id
+  vpc_id      = module.network.aws_vpc.main.id
 
   ingress {
     description     = "Allow HTTP traffic from ALB"
@@ -33,7 +28,7 @@ resource "aws_security_group" "alb_app_sg" {
 resource "aws_security_group" "asg_app_sg" {
   name        = var.asg_sg_app_name
   description = "ASG Security Group for Application Servers"
-  vpc_id      = var.network_module_outputs.aws_vpc.main.id
+  vpc_id      = module.network.aws_vpc.main.id
 
   ingress {
     description     = "Allow HTTP traffic from ALB"
@@ -68,7 +63,7 @@ resource "aws_instance" "app_servers" {
   count             = 2
   ami               = var.ami_id
   instance_type     = var.instance_type
-  subnet_id         = [var.network_module_outputs.aws_subnet.private_subnet_1.id, var.network_module_outputs.aws_subnet.private_subnet_2.id]
+  subnet_id         = [module.network.aws_subnet.private_subnet_1.id, module.network.aws_subnet.private_subnet_2.id]
   security_group_ids = [aws_security_group.alb_app_sg.id]
   key_name          = var.key_name
   
@@ -84,8 +79,19 @@ resource "aws_lb" "app_lb" {
   name               = var.alb_app
   internal           = false
   load_balancer_type = "application"
-  subnets            = [var.network_module_outputs.aws_subnet.private_subnet_1.id, var.network_module_outputs.aws_subnet.private_subnet_2.id]
-  security_groups    = [aws_security_group.alb_app_sg.id]
+  subnets            = [module.network.aws_subnet.private_subnet_1.id, var.module.network.aws_subnet.private_subnet_2.id]
+  security_groups    = # Assuming you have these resources defined in your network module
+output "aws_launch_template_web_id" {
+  value = aws_launch_template.web.id
+}
+
+output "aws_launch_template_web_latest_version" {
+  value = aws_launch_template.web.latest_version
+}
+
+output "aws_lb_target_group_web_arn" {
+  value = aws_lb_target_group.web.arn
+}[aws_security_group.alb_app_sg.id]
 }
 
 output "dns_name" {
@@ -98,13 +104,13 @@ resource "aws_autoscaling_group" "asg_app" {
   desired_capacity    = 2
   max_size            = 4
   min_size            = 1
-  target_group_arns   = [var.network_module_outputs.aws_lb_target_group_app.arn]
+  target_group_arns   = [module.network.aws_lb_target_group_app.arn]
   health_check_type   = "EC2"
-  vpc_zone_identifier = [var.network_module_outputs.aws_subnet.private_subnet_1.id, var.network_module_outputs.aws_subnet.private_subnet_2.id]
+  vpc_zone_identifier = [module.network.aws_subnet.private_subnet_1.id, module.network.aws_subnet.private_subnet_2.id]
 
   launch_template {
-    id      = var.network_module_outputs.aws_launch_template_app.id
-    version = var.network_module_outputs.aws_launch_template_app.latest_version
+    id      = module.network.aws_launch_template_app.id
+    version = module.network.aws_launch_template_app.latest_version
   }
 }
 
@@ -113,7 +119,7 @@ resource "aws_lb_target_group" "app_target_group" {
   name     = var.app_tg_name
   port     = 80
   protocol = "HTTP"
-  vpc_id   = var.network_module_outputs.aws_vpc.main.id
+  vpc_id   = module.network.aws_vpc.main.id
 
   health_check {
     path     = "/"
