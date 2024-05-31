@@ -1,4 +1,34 @@
-variable "region_name" {
-  description = "The AWS region where resources will be provisioned"
+variable "log_group_name" {
+  description = "The name of the CloudWatch log group."
+  type        = string
+}
+
+variable "log_group_retention" {
+  description = "The number of days to retain log events."
+  type        = number
+}
+
+variable "cpu_alarm_name" {
+  description = "The name of the CPU utilization alarm."
+  type        = string
+}
+
+variable "cpu_alarm_threshold" {
+  description = "The threshold for the CPU utilization alarm."
+  type        = number
+}
+
+variable "alarm_action" {
+  description = "The action to take when the alarm is triggered."
+  type        = string
+}
+
+variable "ok_action" {
+  description = "The action to take when the alarm is OK."
+  type        = string
+}
+
+variable "instance_id" {
+  description = "The ID of the instance to monitor."
   type        = string
 }

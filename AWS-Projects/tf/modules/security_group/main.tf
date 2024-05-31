@@ -1,8 +1,9 @@
 # Web Server Security Group
-resource "aws_security_group" "web_sg" {
+
+resource "aws_security_group" "alb_web_sg" {
   name        = var.alb_sg_web_name
   description = "ALB Security Group for Web Servers"
-  vpc_id      = module.network.aws_vpc.main.id
+  vpc_id      = module.network.vpc_id
 
   # Define ingress rules for web servers
   ingress {
@@ -27,10 +28,11 @@ resource "aws_security_group" "web_sg" {
 }
 
 # Auto Scaling Group Security Group for Web Servers
+
 resource "aws_security_group" "asg_security_group_web" {
   name        = var.asg_sg_web_name
   description = "ASG Security Group for Web Servers"
-  vpc_id      = module.network.aws_vpc.main.id
+  vpc_id      = var.vpc_id
 
   # Ingress rule allowing HTTP traffic from ALB
   ingress {
@@ -38,7 +40,7 @@ resource "aws_security_group" "asg_security_group_web" {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
-    security_groups = [aws_security_group.web_sg.id]
+    security_groups = [aws_security_group.alb_web_sg.id]
   }
 
   # Ingress rule allowing SSH traffic from anywhere or your IP
@@ -67,7 +69,7 @@ resource "aws_security_group" "asg_security_group_web" {
 resource "aws_security_group" "alb_app_sg" {
   name        = var.alb_sg_app_name
   description = "ALB Security Group for Application Servers"
-  vpc_id      = module.network.aws_vpc.main.id
+  vpc_id      = var.vpc_id
 
   # Define ingress rules for application servers
   ingress {
@@ -75,7 +77,7 @@ resource "aws_security_group" "alb_app_sg" {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
-    security_groups = [aws_security_group.web_sg.id]
+    security_groups = [aws_security_group.alb_web_sg.id]
   }
 
   # Define egress rules for application servers
@@ -95,7 +97,7 @@ resource "aws_security_group" "alb_app_sg" {
 resource "aws_security_group" "asg_app_sg" {
   name        = var.asg_sg_app_name
   description = "ASG Security Group for Application Servers"
-  vpc_id      = module.network.aws_vpc.main.id
+  vpc_id      = var.vpc_id
 
   # Ingress rule allowing HTTP traffic from ALB
   ingress {
@@ -128,4 +130,41 @@ resource "aws_security_group" "asg_app_sg" {
   }
 }
 
-# Outputs if needed
+
+# Database Security Group
+
+resource "aws_security_group" "db_sg" {
+  name        = var.db_sg_name
+  description = "Database Security Group"
+  vpc_id      = var.vpc_id
+
+  # Define ingress rules for database
+  ingress {
+    description     = "MySQL from Application Servers"
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_app_sg.id]
+  }
+
+  ingress {
+    description = "SSH from specific IP"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+  }
+
+  # Define egress rules for database
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = var.db_sg_name
+  }
+}
+

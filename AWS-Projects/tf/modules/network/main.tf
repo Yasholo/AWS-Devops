@@ -20,6 +20,7 @@ resource "aws_subnet" "public_subnet1" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.public_subnet1_cidr
   availability_zone = var.az_1
+  map_public_ip_on_launch = true  # This ensures that instances launched in this subnet get a public IP
   tags = {
     Name = var.public_subnet1_name
   }
@@ -29,6 +30,7 @@ resource "aws_subnet" "public_subnet2" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.public_subnet2_cidr
   availability_zone = var.az_2
+  map_public_ip_on_launch = true  # This ensures that instances launched in this subnet get a public IP
   tags = {
     Name = var.public_subnet2_name
   }
@@ -51,6 +53,26 @@ resource "aws_subnet" "private_subnet2" {
     Name = var.private_subnet2_name
   }
 }
+
+resource "aws_subnet" "private_db_subnet1" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_db_subnet1_cidr
+  availability_zone = var.az_1
+  tags = {
+    Name = var.private_db_subnet1_name
+  }
+}
+
+resource "aws_subnet" "private_db_subnet2" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_db_subnet2_cidr
+  availability_zone = var.az_2
+  tags = {
+    Name = var.private_db_subnet2_name
+  }
+}
+
+# Route Tables
 
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.main.id
@@ -102,12 +124,13 @@ resource "aws_nat_gateway" "nat_gateway2" {
 }
 
 resource "aws_eip" "nat_eip1" {
-  vpc = true
+  domain = "vpc"
 }
 
 resource "aws_eip" "nat_eip2" {
-  vpc = true
+  domain = "vpc"
 }
+
 
 resource "aws_route" "private_route_nat_gateway1" {
   route_table_id         = aws_route_table.private_route_table1.id

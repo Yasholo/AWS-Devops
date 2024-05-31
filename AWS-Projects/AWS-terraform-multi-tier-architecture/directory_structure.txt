@@ -1,18 +1,30 @@
-root
+project-directory/
 ├── main.tf
 ├── variables.tf
+├── outputs.tf
 ├── terraform.tfvars
-├── modules
-│   ├── network
+├── modules/
+│   ├── network/
 │   │   ├── main.tf
 │   │   ├── variables.tf
-│   ├── application
+│   │   └── outputs.tf
+│   ├── security_group/
 │   │   ├── main.tf
 │   │   ├── variables.tf
-│   ├── database
+│   │   └── outputs.tf
+│   ├── load_balancer/
 │   │   ├── main.tf
 │   │   ├── variables.tf
-│   ├── monitoring
+│   │   └── outputs.tf
+│   ├── auto_scaling_group/
 │   │   ├── main.tf
 │   │   ├── variables.tf
-
+│   │   └── outputs.tf
+│   ├── database/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   └── monitoring/
+│       ├── main.tf
+│       ├── variables.tf
+│       └── outputs.tf

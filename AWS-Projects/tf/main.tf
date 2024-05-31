@@ -29,17 +29,36 @@ module "network" {
 
 module "security_group" {
   source            = "./modules/security_group"
-  vpc_id            = module.networking.vpc_id
+  vpc_id            = module.network.vpc_id
   web_sg_cidr_blocks = var.web_sg_cidr_blocks
   app_sg_cidr_blocks = var.app_sg_cidr_blocks
   db_sg_cidr_blocks  = var.db_sg_cidr_blocks
 }
 
+
+data "aws_instances" "web_instances" {
+  filter {
+    name   = "tag:Name"
+    values = [var.web_instance_name]
+  }
+}
+
+data "aws_instances" "app_instances" {
+  filter {
+    name   = "tag:Name"
+    values = [var.app_instance_name]
+  }
+}
+
 module "load_balancer" {
   source             = "./modules/load_balancer"
-  vpc_id             = module.networking.vpc_id
-  subnets            = module.networking.public_subnets
-  web_security_group = module.security_group.web_sg_id
+  vpc_id             = module.network.vpc_id
+  subnets            = module.network.public_subnets
+  web_tg_name        = var.web_tg_name
+  app_tg_name        = var.app_tg_name
+  web_instance_ids   = data.aws_instances.web_instances.ids
+  app_instance_ids   = data.aws_instances.app_instances.ids
+  web_security_group = module.security_group.alb_web_sg_id
 }
 
 module "auto_scaling_group" {
@@ -51,20 +70,21 @@ module "auto_scaling_group" {
   asg_app_name       = var.asg_app_name
   web_instance_name  = var.web_instance_name
   app_instance_name  = var.app_instance_name
-  asg_sg_web_id      = module.security_group.asg_sg_web_id
-  asg_sg_app_id      = module.security_group.asg_sg_app_id
+  asg_sg_web_id      = module.security_group.asg_web_security_group_id
+  asg_sg_app_id      = module.security_group.asg_app_security_group_id
   public_subnet1_id  = module.network.public_subnet1_id
   public_subnet2_id  = module.network.public_subnet2_id
   private_subnet1_id = module.network.private_subnet1_id
   private_subnet2_id = module.network.private_subnet2_id
   web_tg_arn         = module.load_balancer.web_tg_arn
   app_tg_arn         = module.load_balancer.app_tg_arn
+  # user_data_script    = file("deploy_app.sh")
 }
 
 module "database" {
   source = "./modules/database"
   db_name               = var.db_name
-  db_instance_class     = var.db_instance
+  db_instance_class     = var.db_instance_class
   db_username           = var.db_username
   db_password           = var.db_password
   db_subnet_grp_name    = var.db_subnet_grp_name

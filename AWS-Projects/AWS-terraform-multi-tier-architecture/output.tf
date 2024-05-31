@@ -1,41 +1,54 @@
-output "web_server_ips" {
-  value = module.web.web_server_ips
-  description = "The IP addresses of the web servers launched."
+output "vpc_id" {
+  description = "The ID of the VPC."
+  value       = module.network.vpc_id
 }
 
-output "database_endpoint" {
-  value = module.database.endpoint
-  description = "The endpoint of the RDS MySQL database."
+output "public_subnet_ids" {
+  description = "The IDs of the public subnets."
+  value       = [module.network.public_subnet1_id, module.network.public_subnet2_id]
+}
+
+output "private_subnet_ids" {
+  description = "The IDs of the private subnets."
+  value       = [module.network.private_subnet1_id, module.network.private_subnet2_id]
 }
 
 output "web_lb_dns_name" {
-  value = module.web.dns_name
-  description = "The DNS name of the Application Load Balancer for web servers."
+  description = "The DNS name of the web load balancer."
+  value       = module.load_balancer.web_lb_dns_name
 }
 
 output "app_lb_dns_name" {
-  value = module.application.dns_name
-  description = "The DNS name of the Application Load Balancer for application servers."
+  description = "The DNS name of the app load balancer."
+  value       = module.load_balancer.app_lb_dns_name
 }
 
-output "cloudwatch_logs_app" {
-  value = module.monitoring.app_logs_arn
-  description = "The ARN of the CloudWatch Log Group for application logs."
+output "web_asg_name" {
+  description = "The name of the web auto-scaling group."
+  value       = module.auto_scaling_group.web_asg_name
 }
 
-output "cloudwatch_logs_system" {
-  value = module.monitoring.system_logs_arn
-  description = "The ARN of the CloudWatch Log Group for system logs."
+output "app_asg_name" {
+  description = "The name of the app auto-scaling group."
+  value       = module.auto_scaling_group.app_asg_name
 }
 
+output "db_instance_id" {
+  description = "The ID of the database instance."
+  value       = module.database.db_instance_id
+}
 
-# In this rewritten output.tf file:
+output "db_instance_endpoint" {
+  description = "The endpoint of the database instance."
+  value       = module.database.db_instance_endpoint
+}
 
-#    The web_server_ips output provides the IP addresses of the web servers.
-#    The database_endpoint output provides the endpoint of the RDS MySQL database.
-#    The web_lb_dns_name output provides the DNS name of the Application Load Balancer for web servers.
-#    The app_lb_dns_name output provides the DNS name of the Application Load Balancer for application servers.
-#    The cloudwatch_logs_app output provides the ARN of the CloudWatch Log Group for application logs.
-#    The cloudwatch_logs_system output provides the ARN of the CloudWatch Log Group for system logs.
+output "log_group_name" {
+  description = "The name of the CloudWatch log group."
+  value       = module.monitoring.log_group_name
+}
 
-# These outputs will be displayed after applying the Terraform configuration and can be useful for accessing and managing the deployed infrastructure. Adjust the descriptions as needed for clarity.
+output "cpu_alarm_arn" {
+  description = "The ARN of the CPU utilization alarm."
+  value       = module.monitoring.cpu_alarm_arn
+}
