@@ -10,7 +10,9 @@ resource "aws_launch_configuration" "web_launch_config" {
     create_before_destroy = true
   }
 
-  user_data = file("${path.module}/web_user_data.sh")  # Provide the path to your user data script
+  associate_public_ip_address = true  # Ensure the public IP is associated
+
+  # user_data = file("deploy_web_app.sh")  # Provide the path to your user data script
 }
 
 # Auto Scaling Group for Web Servers
@@ -41,7 +43,7 @@ resource "aws_launch_configuration" "app_launch_config" {
     create_before_destroy = true
   }
 
-  user_data = file("${path.module}/app_user_data.sh")  # Provide the path to your user data script
+  # user_data = file("${path.module}/app_user_data.sh")  # Provide the path to your user data script
 }
 
 # Auto Scaling Group for Application Servers

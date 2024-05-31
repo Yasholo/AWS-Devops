@@ -154,7 +154,7 @@ variable "private_rt_name" {
   default     = "multi-tier-private-route-table"
 }
 
-variable "alb_web" {
+variable "alb_web_name" {
   description = "The name tag for the web application load balancer"
   type        = string
   default     = "multi-tier-web-alb"
@@ -232,7 +232,7 @@ variable "db_subnet_grp_name" {
   default     = "multi-tier-db-subnet-grp"
 }
 
-variable "db_instance" {
+variable "db_instance_class" {
   description = "The instance class for the database"
   type        = string
   default     = "db.t2.micro"

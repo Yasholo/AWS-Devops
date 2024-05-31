@@ -1,24 +1,27 @@
-# Define AWS provider
-provider "aws" {
-  region = var.region_name
+resource "aws_cloudwatch_log_group" "app_log_group" {
+  name              = var.log_group_name
+  retention_in_days = var.log_group_retention
+
+  tags = {
+    Name = var.log_group_name
+  }
 }
 
-# CloudWatch Log Group for application logs
-resource "aws_cloudwatch_log_group" "app_logs" {
-  name              = "/app_logs"
-  retention_in_days = 30
-}
+resource "aws_cloudwatch_metric_alarm" "cpu_utilization_high" {
+  alarm_name          = var.cpu_alarm_name
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "120"
+  statistic           = "Average"
+  threshold           = var.cpu_alarm_threshold
+  alarm_description   = "This metric monitors EC2 CPU utilization"
+  actions_enabled     = true
+  alarm_actions       = [var.alarm_action]
+  ok_actions          = [var.ok_action]
 
-# CloudWatch Log Group for system logs
-resource "aws_cloudwatch_log_group" "system_logs" {
-  name              = "/system_logs"
-  retention_in_days = 30
-}
-
-output "app_logs_arn" {
-  value = aws_cloudwatch_log_group.app_logs.arn
-}
-
-output "system_logs_arn" {
-  value = aws_cloudwatch_log_group.system_logs.arn
+  dimensions = {
+    InstanceId = var.instance_id
+  }
 }
