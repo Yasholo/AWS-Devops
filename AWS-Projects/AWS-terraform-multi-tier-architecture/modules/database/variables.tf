@@ -1,3 +1,5 @@
+# Database Variables
+
 variable "db_subnet_group_name" {
   description = "The name of the database subnet group."
   type        = string
@@ -28,10 +30,10 @@ variable "db_allocated_storage" {
   type        = number
 }
 
-variable "db_name" {
-  description = "The name of the database."
-  type        = string
-}
+# variable "db_name" {
+#  description = "The name of the database."
+#  type        = string
+# }
 
 variable "db_username" {
   description = "The username for the database."

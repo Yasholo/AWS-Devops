@@ -144,7 +144,6 @@ Stores and manages application data persistently. Ensures data integrity, consis
 Tip: You can follow the [official terraform aws documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs) if you ever get stuck while setting up your resources. (use the search bar to get information about a particular object.)
 
 
-
 ## 🚀 Deployment
 
 To deploy the project, follow these steps:

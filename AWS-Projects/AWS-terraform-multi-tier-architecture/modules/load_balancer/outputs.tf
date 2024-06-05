@@ -17,3 +17,11 @@ output "app_tg_arn" {
   description = "ARN of the app target group."
   value       = aws_lb_target_group.app.arn
 }
+
+output "web_lb_dns_name" {
+  value = aws_lb.web.dns_name
+}
+
+output "app_lb_dns_name" {
+  value = aws_lb.app.dns_name
+}
