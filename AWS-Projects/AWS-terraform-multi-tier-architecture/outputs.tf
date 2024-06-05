@@ -52,3 +52,8 @@ output "cpu_alarm_arn" {
   description = "The ARN of the CPU utilization alarm."
   value       = module.monitoring.cpu_alarm_arn
 }
+
+# output "instance_public_ips" {
+#   value = aws_instance.web[*].public_ip
+#   description = "Public ip addresses."
+# }

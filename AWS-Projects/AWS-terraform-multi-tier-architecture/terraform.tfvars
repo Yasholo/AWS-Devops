@@ -1,7 +1,7 @@
-region = "us-west-2"
+region = "us-east-1"
 
 # Network Variables
-vpc_cidr = "10.0.0.0/16"
+vpc_cidr_block = "10.0.0.0/16"
 vpc_name = "my-vpc"
 igw_name = "my-igw"
 public_subnet1_cidr = "10.0.1.0/24"
@@ -16,10 +16,11 @@ private_db_subnet1_cidr = "10.0.5.0/24"
 private_db_subnet1_name = "private-db-subnet-1"
 private_db_subnet2_cidr = "10.0.6.0/24"
 private_db_subnet2_name = "private-db-subnet-2"
-az1 = "us-west-2a"
-az2 = "us-west-2b"
 public_rt_name = "public-route-table"
 private_rt_name = "private-route-table"
+nat_gw_name = "three-tier-nat-gw"
+az_1 = "us-east-1a"
+az_2 = "us-east-1b"
 
 # Security Group Variables
 alb_sg_web_name = "alb-sg-web"
@@ -35,7 +36,7 @@ web_tg_name = "web-tg"
 app_tg_name = "app-tg"
 
 # Auto Scaling Group Variables
-ami_id = "ami-0abcdef1234567890"
+ami_id = "ami-04b70fa74e45c3917"
 instance_type = "t2.micro"
 key_name = "Jobs"
 web_instance_name = "web-instance"
@@ -49,14 +50,13 @@ db_instance_name = "my-database"
 db_engine = "mysql"
 db_instance_class = "db.t3.micro"
 db_allocated_storage = 20
-db_name = "mydb"
-db_username = "admin"
-db_password = "mypassword"
+#db_name = "mydb"
+db_username = "dbadmin"
+db_password = "010password69-="
 
 # Monitoring Variables
 log_group_name = "app-log-group"
 log_group_retention = 7
 cpu_alarm_name = "high-cpu-utilization"
 cpu_alarm_threshold = 80
-alarm_action = "arn:aws:sns:us-west-2:123456789012:my-sns-topic"
-ok_action = "arn:aws:sns:us-west-2:123456789012:my-sns-topic"
+sns_topic_name = "my-east-sns-topic"

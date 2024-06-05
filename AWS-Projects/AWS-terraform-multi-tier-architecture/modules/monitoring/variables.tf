@@ -1,3 +1,5 @@
+# Monitoring Variables
+
 variable "log_group_name" {
   description = "The name of the CloudWatch log group."
   type        = string
@@ -18,17 +20,22 @@ variable "cpu_alarm_threshold" {
   type        = number
 }
 
-variable "alarm_action" {
-  description = "The action to take when the alarm is triggered."
-  type        = string
-}
+# variable "alarm_action" {
+#   description = "The action to take when the alarm is triggered."
+#   type        = string
+# }
 
-variable "ok_action" {
-  description = "The action to take when the alarm is OK."
-  type        = string
-}
+# variable "ok_action" {
+#  description = "The action to take when the alarm is OK."
+#  type        = string
+# }
 
 variable "instance_id" {
   description = "The ID of the instance to monitor."
   type        = string
+}
+
+variable "sns_topic_name" {
+  description = "The name of the SNS topic for alarms"
+  default     = "my-sns-topic"
 }

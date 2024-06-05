@@ -8,6 +8,8 @@ variable "vpc_id" {
   type        = string
 }
 
+# Load Balancer Variables
+
 variable "web_lb_name" {
   description = "Name of the web load balancer."
   type        = string
@@ -26,9 +28,4 @@ variable "web_tg_name" {
 variable "app_tg_name" {
   description = "Name of the target group for the application instances."
   type        = string
-}
-
-variable "subnets" {
-  description = "List of subnets for the load balancers."
-  type        = list(string)
 }

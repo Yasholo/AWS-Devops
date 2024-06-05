@@ -2,8 +2,8 @@ resource "aws_lb" "web" {
   name               = var.web_lb_name
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [var.security_group_id]
-  subnets            = var.subnets
+  security_groups    = modules.security_group.web_security_group_id
+  subnets            = [modules.network.public_subnet1_id, modules.network.public_subnet2_id]
 
   tags = {
     Name = var.web_lb_name
@@ -14,8 +14,8 @@ resource "aws_lb" "app" {
   name               = var.app_lb_name
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [var.security_group_id]
-  subnets            = var.subnets
+  security_groups    = modules.security_group.app_security_group_id
+  subnets            = [modules.network.private_subnet1_id, modules.network.private_subnet2_id]
 
   tags = {
     Name = var.app_lb_name
@@ -42,6 +42,17 @@ resource "aws_lb_target_group" "web" {
   }
 }
 
+resource "aws_lb_listener" "alb_listener_web" {
+  load_balancer_arn = aws_lb.web.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.web.arn
+  }
+}
+
 resource "aws_lb_target_group" "app" {
   name     = var.app_tg_name
   port     = 80
@@ -57,7 +68,22 @@ resource "aws_lb_target_group" "app" {
     matcher             = "200"
   }
 
-  tags = {
+  tags = {# Load Balancer Variables
+web_lb_name = "web-lb"
+app_lb_name = "app-lb"
+web_tg_name = "web-tg"
+app_tg_name = "app-tg"
     Name = var.app_tg_name
+  }
+}
+
+resource "aws_lb_listener" "alb_listener_app" {
+  load_balancer_arn = aws_lb.app.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app.arn
   }
 }

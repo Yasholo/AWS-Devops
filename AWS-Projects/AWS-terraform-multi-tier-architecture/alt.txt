@@ -1,0 +1,1480 @@
+project-directory/
+├── main.tf
+├── variables.tf
+├── outputs.tf
+├── terraform.tfvars
+├── modules/
+│   ├── network/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── security_group/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── load_balancer/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── auto_scaling_group/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── database/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   └── monitoring/
+│       ├── main.tf
+│       ├── variables.tf
+│       └── outputs.tf
+
+
+main.tf
+
+provider "aws" {
+  region = var.region
+}
+
+module "network" {
+  source = "./modules/network"
+  region = var.region
+  vpc_cidr_block = var.vpc_cidr_block
+  vpc_name = var.vpc_name
+  igw_name = var.igw_name
+  public_subnet1_cidr = var.public_subnet1_cidr
+  public_subnet1_name = var.public_subnet1_name
+  public_subnet2_cidr = var.public_subnet2_cidr
+  public_subnet2_name = var.public_subnet2_name
+  private_subnet1_cidr = var.private_subnet1_cidr
+  private_subnet1_name = var.private_subnet1_name
+  private_subnet2_cidr = var.private_subnet2_cidr
+  private_subnet2_name = var.private_subnet2_name
+  private_db_subnet1_cidr = var.private_db_subnet1_cidr
+  private_db_subnet1_name = var.private_db_subnet1_name
+  private_db_subnet2_cidr = var.private_db_subnet2_cidr
+  private_db_subnet2_name = var.private_db_subnet2_name
+  az_1 = var.az_1
+  az_2 = var.az_2
+  public_rt_name = var.public_rt_name
+  private_rt_name = var.private_rt_name
+}
+
+module "security_group" {
+  source = "./modules/security_group"
+  vpc_id = module.network.vpc_id
+  alb_sg_web_name = var.alb_sg_web_name
+  alb_sg_app_name = var.alb_sg_app_name
+  asg_sg_web_name = var.asg_sg_web_name
+  asg_sg_app_name = var.asg_sg_app_name
+  db_sg_name = var.db_sg_name
+}
+
+module "load_balancer" {
+  source = "./modules/load_balancer"
+  vpc_id = module.network.vpc_id
+  subnets = [module.network.public_subnet1_id, module.network.public_subnet2_id]
+  security_group_id = module.security_group.asg_web_security_group_id
+  web_lb_name = var.web_lb_name
+  app_lb_name = var.app_lb_name
+  web_tg_name = var.web_tg_name
+  app_tg_name = var.app_tg_name
+}
+
+module "auto_scaling_group" {
+  source                = "./modules/auto_scaling_group"
+  ami_id                = var.ami_id
+  instance_type         = var.instance_type
+  key_name              = var.key_name
+  asg_sg_web_id         = module.security_group.asg_web_security_group_id
+  asg_sg_app_id         = module.security_group.asg_app_security_group_id
+  public_subnet1_id     = module.network.public_subnet1_id
+  public_subnet2_id     = module.network.public_subnet2_id
+  private_subnet1_id    = module.network.private_subnet1_id
+  private_subnet2_id    = module.network.private_subnet2_id
+  web_tg_arn            = module.load_balancer.web_tg_arn
+  app_tg_arn            = module.load_balancer.app_tg_arn
+  web_instance_name     = var.web_instance_name
+  app_instance_name     = var.app_instance_name
+  # asg_web_name          = var.asg_web_name
+  # asg_app_name          = var.asg_app_name
+}
+
+
+module "database" {
+  source = "./modules/database"
+  db_subnet_group_name = var.db_subnet_group_name
+  db_subnet_ids = [module.network.private_db_subnet1_id, module.network.private_db_subnet2_id]
+  db_instance_name = var.db_instance_name
+  db_engine = var.db_engine
+  db_instance_class = var.db_instance_class
+  db_allocated_storage = var.db_allocated_storage
+  # db_name = var.db_name
+  db_username = var.db_username
+  db_password = var.db_password
+  db_security_group_id = module.security_group.db_sg_id
+}
+
+module "monitoring" {
+  source = "./modules/monitoring"
+  log_group_name = var.log_group_name
+  log_group_retention = var.log_group_retention
+  cpu_alarm_name = var.cpu_alarm_name
+  cpu_alarm_threshold = var.cpu_alarm_threshold
+  # alarm_action = var.alarm_action
+  # ok_action = var.ok_action
+  instance_id = module.auto_scaling_group.web_instance_ids
+  sns_topic_name = var.sns_topic_name
+}
+
+
+variables.tf
+
+variable "region" {
+  description = "The AWS region to deploy resources in."
+  type        = string
+}
+
+# Network Variables
+variable "vpc_cidr_block" {
+  description = "The CIDR block for the VPC."
+  type        = string
+}
+
+variable "vpc_name" {
+  description = "The name of the VPC."
+  type        = string
+}
+
+variable "igw_name" {
+  description = "The name of the Internet Gateway."
+  type        = string
+}
+
+variable "public_subnet1_cidr" {
+  description = "The CIDR block for the first public subnet."
+  type        = string
+}
+
+variable "public_subnet1_name" {
+  description = "The name of the first public subnet."
+  type        = string
+}
+
+variable "public_subnet2_cidr" {
+  description = "The CIDR block for the second public subnet."
+  type        = string
+}
+
+variable "public_subnet2_name" {
+  description = "The name of the second public subnet."
+  type        = string
+}
+
+variable "private_subnet1_cidr" {
+  description = "The CIDR block for the first private subnet."
+  type        = string
+}
+
+variable "private_subnet1_name" {
+  description = "The name of the first private subnet."
+  type        = string
+}
+
+variable "private_subnet2_cidr" {
+  description = "The CIDR block for the second private subnet."
+  type        = string
+}
+
+variable "private_subnet2_name" {
+  description = "The name of the second private subnet."
+  type        = string
+}
+
+variable "private_db_subnet1_cidr" {
+  description = "The CIDR block for the first private database subnet."
+  type        = string
+}
+
+variable "private_db_subnet1_name" {
+  description = "The name of the first private database subnet."
+  type        = string
+}
+
+variable "private_db_subnet2_cidr" {
+  description = "The CIDR block for the second private database subnet."
+  type        = string
+}
+
+variable "private_db_subnet2_name" {
+  description = "The name of the second private database subnet."
+  type        = string
+}
+
+variable "az_1" {
+  description = "The first availability zone."
+  type        = string
+}
+
+variable "az_2" {
+  description = "The second availability zone."
+  type        = string
+}
+
+variable "public_rt_name" {
+  description = "The name of the public route table."
+  type        = string
+}
+
+variable "private_rt_name" {
+  description = "The name of the private route table."
+  type        = string
+}
+
+# Security Group Variables
+variable "alb_sg_web_name" {
+  description = "The name of the security group for the web load balancer."
+  type        = string
+}
+
+variable "alb_sg_app_name" {
+  description = "The name of the security group for the app load balancer."
+  type        = string
+}
+
+variable "asg_sg_web_name" {
+  description = "The name of the security group for the web auto-scaling group."
+  type        = string
+}
+
+variable "asg_sg_app_name" {
+  description = "The name of the security group for the app auto-scaling group."
+  type        = string
+}
+
+variable "db_sg_name" {
+  description = "The name of the security group for the database."
+  type        = string
+}
+
+# Load Balancer Variables
+variable "web_lb_name" {
+  description = "The name of the web load balancer."
+  type        = string
+}
+
+variable "app_lb_name" {
+  description = "The name of the app load balancer."
+  type        = string
+}
+
+variable "web_tg_name" {
+  description = "The name of the web target group."
+  type        = string
+}
+
+variable "app_tg_name" {
+  description = "The name of the app target group."
+  type        = string
+}
+
+# Auto Scaling Group Variables
+variable "ami_id" {
+  description = "The AMI ID for the instances."
+  type        = string
+}
+
+variable "instance_type" {
+  description = "The instance type for the instances."
+  type        = string
+}
+
+variable "key_name" {
+  description = "The key name for SSH access."
+  type        = string
+}
+
+variable "web_instance_name" {
+  description = "The name of the web instances."
+  type        = string
+}
+
+variable "app_instance_name" {
+  description = "The name of the app instances."
+  type        = string
+}
+
+variable "asg_web_name" {
+  description = "The name of the web auto-scaling group."
+  type        = string
+}
+
+variable "asg_app_name" {
+  description = "The name of the app auto-scaling group."
+  type        = string
+}
+
+# Database Variables
+variable "db_subnet_group_name" {
+  description = "The name of the database subnet group."
+  type        = string
+}
+
+variable "db_instance_name" {
+  description = "The name of the database instance."
+  type        = string
+}
+
+variable "db_engine" {
+  description = "The database engine (e.g., MySQL, PostgreSQL)."
+  type        = string
+}
+
+variable "db_instance_class" {
+  description = "The instance type of the database instance."
+  type        = string
+}
+
+variable "db_allocated_storage" {
+  description = "The allocated storage in gigabytes."
+  type        = number
+}
+
+# variable "db_name" {
+#  description = "The name of the database."
+#  type        = string
+# }
+
+variable "db_username" {
+  description = "The username for the database."
+  type        = string
+}
+
+variable "db_password" {
+  description = "The password for the database."
+  type        = string
+}
+
+# Monitoring Variables
+variable "log_group_name" {
+  description = "The name of the CloudWatch log group."
+  type        = string
+}
+
+variable "log_group_retention" {
+  description = "The number of days to retain log events."
+  type        = number
+}
+
+variable "cpu_alarm_name" {
+  description = "The name of the CPU utilization alarm."
+  type        = string
+}
+
+variable "cpu_alarm_threshold" {
+  description = "The threshold for the CPU utilization alarm."
+  type        = number
+}
+
+variable "sns_topic_name" {
+  description = "The name of the SNS topic for alarms"
+  default     = "my-sns-topic"
+}
+
+# variable "alarm_action" {
+#   description = "The action to take when the alarm is triggered."
+#  type        = string
+# }
+
+# variable "ok_action" {
+#  description = "The action to take when the alarm is OK."
+#  type        = string
+# }
+
+outputs.tf
+
+output "vpc_id" {
+  description = "The ID of the VPC."
+  value       = module.network.vpc_id
+}
+
+output "public_subnet_ids" {
+  description = "The IDs of the public subnets."
+  value       = [module.network.public_subnet1_id, module.network.public_subnet2_id]
+}
+
+output "private_subnet_ids" {
+  description = "The IDs of the private subnets."
+  value       = [module.network.private_subnet1_id, module.network.private_subnet2_id]
+}
+
+output "web_lb_dns_name" {
+  description = "The DNS name of the web load balancer."
+  value       = module.load_balancer.web_lb_dns_name
+}
+
+output "app_lb_dns_name" {
+  description = "The DNS name of the app load balancer."
+  value       = module.load_balancer.app_lb_dns_name
+}
+
+output "web_asg_name" {
+  description = "The name of the web auto-scaling group."
+  value       = module.auto_scaling_group.web_asg_name
+}
+
+output "app_asg_name" {
+  description = "The name of the app auto-scaling group."
+  value       = module.auto_scaling_group.app_asg_name
+}
+
+output "db_instance_id" {
+  description = "The ID of the database instance."
+  value       = module.database.db_instance_id
+}
+
+output "db_instance_endpoint" {
+  description = "The endpoint of the database instance."
+  value       = module.database.db_instance_endpoint
+}
+
+output "log_group_name" {
+  description = "The name of the CloudWatch log group."
+  value       = module.monitoring.log_group_name
+}
+
+output "cpu_alarm_arn" {
+  description = "The ARN of the CPU utilization alarm."
+  value       = module.monitoring.cpu_alarm_arn
+}
+
+# output "instance_public_ips" {
+#   value = aws_instance.web[*].public_ip
+#   description = "Public ip addresses."
+# }
+
+terraform.tfvars
+
+region = "us-east-1"
+
+# Network Variables
+vpc_cidr_block = "10.0.0.0/16"
+vpc_name = "my-vpc"
+igw_name = "my-igw"
+public_subnet1_cidr = "10.0.1.0/24"
+public_subnet1_name = "public-subnet-1"
+public_subnet2_cidr = "10.0.2.0/24"
+public_subnet2_name = "public-subnet-2"
+private_subnet1_cidr = "10.0.3.0/24"
+private_subnet1_name = "private-subnet-1"
+private_subnet2_cidr = "10.0.4.0/24"
+private_subnet2_name = "private-subnet-2"
+private_db_subnet1_cidr = "10.0.5.0/24"
+private_db_subnet1_name = "private-db-subnet-1"
+private_db_subnet2_cidr = "10.0.6.0/24"
+private_db_subnet2_name = "private-db-subnet-2"
+az_1 = "us-east-1a"
+az_2 = "us-east-1b"
+public_rt_name = "public-route-table"
+private_rt_name = "private-route-table"
+
+# Security Group Variables
+alb_sg_web_name = "alb-sg-web"
+alb_sg_app_name = "alb-sg-app"
+asg_sg_web_name = "asg-sg-web"
+asg_sg_app_name = "asg-sg-app"
+db_sg_name = "db-sg"
+
+# Load Balancer Variables
+web_lb_name = "web-lb"
+app_lb_name = "app-lb"
+web_tg_name = "web-tg"
+app_tg_name = "app-tg"
+
+# Auto Scaling Group Variables
+ami_id = "ami-04b70fa74e45c3917"
+instance_type = "t2.micro"
+key_name = "Jobs"
+web_instance_name = "web-instance"
+app_instance_name = "app-instance"
+asg_web_name = "web-asg"
+asg_app_name = "app-asg"
+
+# Database Variables
+db_subnet_group_name = "db-subnet-group"
+db_instance_name = "my-database"
+db_engine = "mysql"
+db_instance_class = "db.t3.micro"
+db_allocated_storage = 20
+#db_name = "mydb"
+db_username = "dbadmin"
+db_password = "010password69-="
+
+# Monitoring Variables
+log_group_name = "app-log-group"
+log_group_retention = 7
+cpu_alarm_name = "high-cpu-utilization"
+cpu_alarm_threshold = 80
+sns_topic_name = "my-east-sns-topic"
+# alarm_action = ""aws_sns_topic.alarm_topic.arn"
+# ok_action = "aws_sns_topic.alarm_topic.arn"
+
+modules/network/main
+provider "aws" {
+  region = var.region
+}
+
+# Define the VPC
+resource "aws_vpc" "main" {
+  cidr_block = var.vpc_cidr_block
+  tags = {
+    Name = var.vpc_name
+  }
+}
+
+# Define the Internet Gateway
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+  tags = {
+    Name = var.igw_name
+  }
+}
+
+# Define public subnets
+resource "aws_subnet" "public_subnet1" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.public_subnet1_cidr
+  availability_zone = var.az_1
+  tags = {
+    Name = var.public_subnet1_name
+  }
+}
+
+resource "aws_subnet" "public_subnet2" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.public_subnet2_cidr
+  availability_zone = var.az_2
+  tags = {
+    Name = var.public_subnet2_name
+  }
+}
+
+# Define private subnets
+resource "aws_subnet" "private_subnet1" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_subnet1_cidr
+  availability_zone = var.az_1
+  tags = {
+    Name = var.private_subnet1_name
+  }
+}
+
+resource "aws_subnet" "private_subnet2" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_subnet2_cidr
+  availability_zone = var.az_2
+  tags = {
+    Name = var.private_subnet2_name
+  }
+}
+
+resource "aws_subnet" "private_db_subnet1" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_db_subnet1_cidr
+  availability_zone = var.az_1
+  tags = {
+    Name = var.private_db_subnet1_name
+  }
+}
+
+resource "aws_subnet" "private_db_subnet2" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_db_subnet2_cidr
+  availability_zone = var.az_2
+  tags = {
+    Name = var.private_db_subnet2_name
+  }
+}
+
+# Define route tables and associations
+resource "aws_route_table" "public_route_table" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+
+  tags = {
+    Name = var.public_rt_name
+  }
+}
+
+resource "aws_route_table_association" "public_subnet1_association" {
+  subnet_id      = aws_subnet.public_subnet1.id
+  route_table_id = aws_route_table.public_route_table.id
+}
+
+resource "aws_route_table_association" "public_subnet2_association" {
+  subnet_id      = aws_subnet.public_subnet2.id
+  route_table_id = aws_route_table.public_route_table.id
+}
+
+resource "aws_route_table" "private_route_table1" {
+  vpc_id = aws_vpc.main.id
+  tags = {
+    Name = "${var.private_rt_name}-1"
+  }
+}
+
+resource "aws_route_table" "private_route_table2" {
+  vpc_id = aws_vpc.main.id
+  tags = {
+    Name = "${var.private_rt_name}-2"
+  }
+}
+
+resource "aws_nat_gateway" "nat_gateway1" {
+  allocation_id = aws_eip.nat_eip1.id
+  subnet_id     = aws_subnet.public_subnet1.id
+}
+
+resource "aws_eip" "nat_eip1" {
+  domain = "vpc"
+}
+
+resource "aws_nat_gateway" "nat_gateway2" {
+  allocation_id = aws_eip.nat_eip2.id
+  subnet_id     = aws_subnet.public_subnet2.id
+}
+
+resource "aws_eip" "nat_eip2" {
+  domain = "vpc"
+}
+
+resource "aws_route" "private_route1" {
+  route_table_id         = aws_route_table.private_route_table1.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat_gateway1.id
+}
+
+resource "aws_route" "private_route2" {
+  route_table_id         = aws_route_table.private_route_table2.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat_gateway2.id
+}
+
+modules/network/variable.tf
+
+variable "region" {
+  description = "The region where AWS resources will be created."
+  type        = string
+}
+
+variable "vpc_cidr_block" {
+  description = "The CIDR block for the VPC."
+  type        = string
+}
+
+variable "vpc_name" {
+  description = "The name of the VPC."
+  type        = string
+}
+
+variable "igw_name" {
+  description = "The name of the Internet Gateway."
+  type        = string
+}
+
+variable "public_subnet1_cidr" {
+  description = "The CIDR block for the first public subnet."
+  type        = string
+}
+
+variable "public_subnet1_name" {
+  description = "The name tag for the first public subnet."
+  type        = string
+}
+
+variable "public_subnet2_cidr" {
+  description = "The CIDR block for the second public subnet."
+  type        = string
+}
+
+variable "public_subnet2_name" {
+  description = "The name tag for the second public subnet."
+  type        = string
+}
+
+variable "private_subnet1_cidr" {
+  description = "The CIDR block for the first private subnet."
+  type        = string
+}
+
+variable "private_subnet1_name" {
+  description = "The name tag for the first private subnet."
+  type        = string
+}
+
+variable "private_subnet2_cidr" {
+  description = "The CIDR block for the second private subnet."
+  type        = string
+}
+
+variable "private_subnet2_name" {
+  description = "The name tag for the second private subnet."
+  type        = string
+}
+
+variable "private_db_subnet1_cidr" {
+  description = "The CIDR block for the first private database subnet."
+  type        = string
+}
+
+variable "private_db_subnet1_name" {
+  description = "The name tag for the first private database subnet."
+  type        = string
+}
+
+variable "private_db_subnet2_cidr" {
+  description = "The CIDR block for the second private database subnet."
+  type        = string
+}
+
+variable "private_db_subnet2_name" {
+  description = "The name tag for the second private database subnet."
+  type        = string
+}
+
+variable "az_1" {
+  description = "The availability zone for the first subnet."
+  type        = string
+}
+
+variable "az_2" {
+  description = "The availability zone for the second subnet."
+  type        = string
+}
+
+variable "public_rt_name" {
+  description = "The name tag for the public route table."
+  type        = string
+}
+
+variable "private_rt_name" {
+  description = "The name tag for the private route tables."
+  type        = string
+}
+
+modules/network/outputs.tf
+
+output "vpc_id" {
+  description = "The ID of the VPC."
+  value       = aws_vpc.main.id
+}
+
+output "public_subnet1_id" {
+  description = "The ID of the first public subnet."
+  value       = aws_subnet.public_subnet1.id
+}
+
+output "public_subnet2_id" {
+  description = "The ID of the second public subnet."
+  value       = aws_subnet.public_subnet2.id
+}
+
+output "private_subnet1_id" {
+  description = "The ID of the first private subnet."
+  value       = aws_subnet.private_subnet1.id
+}
+
+output "private_subnet2_id" {
+  description = "The ID of the second private subnet."
+  value       = aws_subnet.private_subnet2.id
+}
+
+output "private_db_subnet1_id" {
+  description = "The ID of the first private database subnet."
+  value       = aws_subnet.private_db_subnet1.id
+}
+
+output "private_db_subnet2_id" {
+  description = "The ID of the second private database subnet."
+  value       = aws_subnet.private_db_subnet2.id
+}
+
+modules/security_group/main.tf
+resource "aws_security_group" "web_sg" {
+  name        = var.alb_sg_web_name
+  description = "Security group for web ALB"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = var.alb_sg_web_name
+  }
+}
+
+resource "aws_security_group" "app_sg" {
+  name        = var.alb_sg_app_name
+  description = "Security group for app ALB"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = var.alb_sg_app_name
+  }
+}
+
+resource "aws_security_group" "asg_web_sg" {
+  name        = var.asg_sg_web_name
+  description = "Security group for web ASG"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = var.asg_sg_web_name
+  }
+}
+
+resource "aws_security_group" "asg_app_sg" {
+  name        = var.asg_sg_app_name
+  description = "Security group for app ASG"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = var.asg_sg_app_name
+  }
+}
+
+resource "aws_security_group" "db_sg" {
+  name        = var.db_sg_name
+  description = "Security group for RDS"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "SSH from specific IP"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = var.db_sg_name
+  }
+}
+
+modules/security_group/variables.tf
+
+variable "vpc_id" {
+  description = "The ID of the VPC."
+  type        = string
+}
+
+variable "alb_sg_web_name" {
+  description = "Name of the security group for the web load balancer."
+  type        = string
+}
+
+variable "asg_sg_web_name" {
+  description = "Name of the security group for the web auto-scaling group."
+  type        = string
+}
+
+variable "alb_sg_app_name" {
+  description = "Name of the security group for the app load balancer."
+  type        = string
+}
+
+variable "asg_sg_app_name" {
+  description = "Name of the security group for the app auto-scaling group."
+  type        = string
+}
+
+variable "db_sg_name" {
+  description = "Name of the security group for the database."
+  type        = string
+}
+
+
+modules/security_group/outputs.tf
+
+output "web_security_group_id" {
+  description = "ID of the web security group."
+  value       = aws_security_group.web_sg.id
+}
+
+output "app_security_group_id" {
+  description = "ID of the app security group."
+  value       = aws_security_group.app_sg.id
+}
+
+output "asg_web_security_group_id" {
+  description = "ID of the web ASG security group."
+  value       = aws_security_group.asg_web_sg.id
+}
+
+output "asg_app_security_group_id" {
+  description = "ID of the app ASG security group."
+  value       = aws_security_group.asg_app_sg.id
+}
+
+output "db_sg_id" {
+  description = "ID of the database security group."
+  value       = aws_security_group.db_sg.id
+}
+
+modules/load_balancer/main.tf
+
+resource "aws_lb" "web" {
+  name               = var.web_lb_name
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [var.security_group_id]
+  subnets            = var.subnets
+
+  tags = {
+    Name = var.web_lb_name
+  }
+}
+
+resource "aws_lb" "app" {
+  name               = var.app_lb_name
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [var.security_group_id]
+  subnets            = var.subnets
+
+  tags = {
+    Name = var.app_lb_name
+  }
+}
+
+resource "aws_lb_target_group" "web" {
+  name     = var.web_tg_name
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+
+  health_check {
+    path                = "/"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    matcher             = "200"
+  }
+
+  tags = {
+    Name = var.web_tg_name
+  }
+}
+
+resource "aws_lb_target_group" "app" {
+  name     = var.app_tg_name
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+
+  health_check {
+    path                = "/"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    matcher             = "200"
+  }
+
+  tags = {
+    Name = var.app_tg_name
+  }
+}
+
+modules/load_balancer/variables.tf
+
+variable "security_group_id" {
+  description = "Security group ID for the load balancers."
+  type        = string
+}
+
+variable "vpc_id" {
+  description = "The ID of the VPC."
+  type        = string
+}
+
+variable "web_lb_name" {
+  description = "Name of the web load balancer."
+  type        = string
+}
+
+variable "app_lb_name" {
+  description = "Name of the app load balancer."
+  type        = string
+}
+
+variable "web_tg_name" {
+  description = "Name of the target group for the web instances."
+  type        = string
+}
+
+variable "app_tg_name" {
+  description = "Name of the target group for the application instances."
+  type        = string
+}
+
+variable "subnets" {
+  description = "List of subnets for the load balancers."
+  type        = list(string)
+}
+
+modules/load_balancer/outputs.tf
+
+output "web_lb_arn" {
+  description = "ARN of the web load balancer."
+  value       = aws_lb.web.arn
+}
+
+output "app_lb_arn" {
+  description = "ARN of the app load balancer."
+  value       = aws_lb.app.arn
+}
+
+output "web_tg_arn" {
+  description = "ARN of the web target group."
+  value       = aws_lb_target_group.web.arn
+}
+
+output "app_tg_arn" {
+  description = "ARN of the app target group."
+  value       = aws_lb_target_group.app.arn
+}
+
+output "web_lb_dns_name" {
+  value = aws_lb.web.dns_name
+}
+
+output "app_lb_dns_name" {
+  value = aws_lb.app.dns_name
+}
+
+
+modules/auto_scaling_group/main.tf
+resource "aws_launch_configuration" "app" {
+  name          = var.app_instance_name
+  image_id      = var.ami_id
+  instance_type = var.instance_type
+  key_name      = var.key_name
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  security_groups = [var.asg_sg_app_id]
+
+  user_data = <<-EOF
+              #!/bin/bash
+              # Your bootstrap script here
+              EOF
+}
+
+resource "aws_launch_configuration" "web" {
+  name          = var.web_instance_name
+  image_id      = var.ami_id
+  instance_type = var.instance_type
+  key_name      = var.key_name
+
+  associate_public_ip_address = true
+ 
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  security_groups = [var.asg_sg_web_id]
+
+  user_data = <<-EOF
+              #!/bin/bash
+              ${file("./deploy_web_app.sh")}
+              EOF
+}
+
+resource "aws_autoscaling_group" "app" {
+  desired_capacity     = 2
+  max_size             = 4
+  min_size             = 1
+  vpc_zone_identifier  = [var.private_subnet1_id, var.private_subnet2_id]
+  launch_configuration = aws_launch_configuration.app.id
+
+  tag {
+    key                 = "Name"
+    value               = var.app_instance_name
+    propagate_at_launch = true
+  }
+
+  target_group_arns = [var.app_tg_arn]
+}
+
+resource "aws_autoscaling_group" "web" {
+  desired_capacity     = 2
+  max_size             = 4
+  min_size             = 1
+  vpc_zone_identifier  = [var.public_subnet1_id, var.public_subnet2_id]
+  launch_configuration = aws_launch_configuration.web.id
+
+  tag {
+    key                 = "Name"
+    value               = var.web_instance_name
+    propagate_at_launch = true
+  }
+
+  target_group_arns = [var.web_tg_arn]
+}
+
+
+modules/auto_scaling_group/variables.tf
+
+variable "app_instance_name" {
+  description = "Name tag for the app instances."
+  type        = string
+}
+
+variable "web_instance_name" {
+  description = "Name tag for the web instances."
+  type        = string
+}
+
+variable "ami_id" {
+  description = "AMI ID for the instances."
+  type        = string
+}
+
+variable "instance_type" {
+  description = "Instance type for the instances."
+  type        = string
+}
+
+variable "key_name" {
+  description = "Key pair name for SSH access."
+  type        = string
+}
+
+variable "asg_sg_web_id" {
+  description = "Security group ID for the web ASG."
+  type        = string
+}
+
+variable "asg_sg_app_id" {
+  description = "Security group ID for the app ASG."
+  type        = string
+}
+
+variable "private_subnet1_id" {
+  description = "ID of the first private subnet."
+  type        = string
+}
+
+variable "private_subnet2_id" {
+  description = "ID of the second private subnet."
+  type        = string
+}
+
+variable "public_subnet1_id" {
+  description = "ID of the first public subnet."
+  type        = string
+}
+
+variable "public_subnet2_id" {
+  description = "ID of the second public subnet."
+  type        = string
+}
+
+variable "app_tg_arn" {
+  description = "ARN of the app target group."
+  type        = string
+}
+
+variable "web_tg_arn" {
+  description = "ARN of the web target group."
+  type        = string
+}
+
+
+modules/auto_scaling_group/outputs.tf
+
+output "app_asg_name" {
+  description = "Name of the app ASG."
+  value       = aws_autoscaling_group.app.name
+}
+
+output "web_asg_name" {
+  description = "Name of the web ASG."
+  value       = aws_autoscaling_group.web.name
+}
+
+output "web_instance_ids" {
+  value = aws_autoscaling_group.web.id
+}
+
+
+modules/database/main.tf
+
+resource "aws_db_subnet_group" "db_subnet_group" {
+  name       = var.db_subnet_group_name
+  subnet_ids = var.db_subnet_ids
+
+  tags = {
+    Name = var.db_subnet_group_name
+  }
+}
+
+resource "aws_db_instance" "db_instance" {
+  identifier        = var.db_instance_name
+  engine            = var.db_engine
+  instance_class    = var.db_instance_class
+  allocated_storage = var.db_allocated_storage
+  # name              = var.db_name
+  username          = var.db_username
+  password          = var.db_password
+  db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name
+  vpc_security_group_ids = [var.db_security_group_id]
+
+  skip_final_snapshot = true
+
+  tags = {
+    Name = var.db_instance_name
+  }
+}
+
+modules/database/variables.tf
+
+variable "db_subnet_group_name" {
+  description = "The name of the database subnet group."
+  type        = string
+}
+
+variable "db_subnet_ids" {
+  description = "List of subnet IDs for the database subnet group."
+  type        = list(string)
+}
+
+variable "db_instance_name" {
+  description = "The name of the database instance."
+  type        = string
+}
+
+variable "db_engine" {
+  description = "The database engine (e.g., MySQL, PostgreSQL)."
+  type        = string
+}
+
+variable "db_instance_class" {
+  description = "The instance type of the database instance."
+  type        = string
+}
+
+variable "db_allocated_storage" {
+  description = "The allocated storage in gigabytes."
+  type        = number
+}
+
+# variable "db_name" {
+#  description = "The name of the database."
+#  type        = string
+# }
+
+variable "db_username" {
+  description = "The username for the database."
+  type        = string
+}
+
+variable "db_password" {
+  description = "The password for the database."
+  type        = string
+}
+
+variable "db_security_group_id" {
+  description = "The security group ID for the database."
+  type        = string
+}
+
+modules/database/outputs.tf
+
+output "db_instance_id" {
+  description = "The ID of the database instance."
+  value       = aws_db_instance.db_instance.id
+}
+
+output "db_instance_endpoint" {
+  description = "The endpoint of the database instance."
+  value       = aws_db_instance.db_instance.endpoint
+}
+
+
+modules/monitoring/main.tf
+
+resource "aws_cloudwatch_log_group" "app_log_group" {
+  name              = var.log_group_name
+  retention_in_days = var.log_group_retention
+
+  tags = {
+    Name = var.log_group_name
+  }
+}
+
+
+resource "aws_sns_topic" "alarm_topic" {
+  name = var.sns_topic_name
+}
+
+resource "aws_cloudwatch_metric_alarm" "cpu_utilization_high" {
+  alarm_name          = var.cpu_alarm_name
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "120"
+  statistic           = "Average"
+  threshold           = var.cpu_alarm_threshold
+  alarm_description   = "This metric monitors EC2 CPU utilization"
+  actions_enabled     = true
+  alarm_actions       = [aws_sns_topic.alarm_topic.arn]
+  ok_actions          = [aws_sns_topic.alarm_topic.arn]
+
+  dimensions = {
+    InstanceId = var.instance_id
+  }
+}
+
+modules/monitoring/variables.tf
+
+variable "log_group_name" {
+  description = "The name of the CloudWatch log group."
+  type        = string
+}
+
+variable "log_group_retention" {
+  description = "The number of days to retain log events."
+  type        = number
+}
+
+variable "cpu_alarm_name" {
+  description = "The name of the CPU utilization alarm."
+  type        = string
+}
+
+variable "cpu_alarm_threshold" {
+  description = "The threshold for the CPU utilization alarm."
+  type        = number
+}
+
+# variable "alarm_action" {
+#   description = "The action to take when the alarm is triggered."
+#   type        = string
+# }
+
+# variable "ok_action" {
+#  description = "The action to take when the alarm is OK."
+#  type        = string
+# }
+
+variable "instance_id" {
+  description = "The ID of the instance to monitor."
+  type        = string
+}
+
+variable "sns_topic_name" {
+  description = "The name of the SNS topic for alarms"
+  default     = "my-sns-topic"
+}
+
+
+modules/monitoring/outputs.tf
+
+output "log_group_name" {
+  description = "The name of the CloudWatch log group."
+  value       = aws_cloudwatch_log_group.app_log_group.name
+}
+
+output "cpu_alarm_arn" {
+  description = "The ARN of the CPU utilization alarm."
+  value       = aws_cloudwatch_metric_alarm.cpu_utilization_high.arn
+}
+
+
+output "sns_topic_arn" {
+  value = aws_sns_topic.alarm_topic.arn
+}

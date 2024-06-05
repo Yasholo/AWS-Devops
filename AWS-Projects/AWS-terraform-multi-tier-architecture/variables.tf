@@ -3,8 +3,18 @@ variable "region" {
   type        = string
 }
 
+variable "vpc_id" {
+  description = "The ID of the VPC."
+  type        = string
+}
+
+variable "security_group_id" {
+  description = "Security group ID for the load balancers."
+  type        = string
+}
+
 # Network Variables
-variable "vpc_cidr" {
+variable "vpc_cidr_block" {
   description = "The CIDR block for the VPC."
   type        = string
 }
@@ -79,16 +89,6 @@ variable "private_db_subnet2_name" {
   type        = string
 }
 
-variable "az1" {
-  description = "The first availability zone."
-  type        = string
-}
-
-variable "az2" {
-  description = "The second availability zone."
-  type        = string
-}
-
 variable "public_rt_name" {
   description = "The name of the public route table."
   type        = string
@@ -99,54 +99,71 @@ variable "private_rt_name" {
   type        = string
 }
 
-# Security Group Variables
-variable "alb_sg_web_name" {
-  description = "The name of the security group for the web load balancer."
+variable "nat-gw-name" {
+  description = "Name for NAT Gateway"
+}
+
+variable "az_1" {
+  description = "The first availability zone."
   type        = string
 }
 
-variable "alb_sg_app_name" {
-  description = "The name of the security group for the app load balancer."
+variable "az_2" {
+  description = "The second availability zone."
+  type        = string
+}
+
+# Security Group Variables
+
+variable "alb_sg_web_name" {
+  description = "Name of the security group for the web load balancer."
   type        = string
 }
 
 variable "asg_sg_web_name" {
-  description = "The name of the security group for the web auto-scaling group."
+  description = "Name of the security group for the web auto-scaling group."
+  type        = string
+}
+
+variable "alb_sg_app_name" {
+  description = "Name of the security group for the app load balancer."
   type        = string
 }
 
 variable "asg_sg_app_name" {
-  description = "The name of the security group for the app auto-scaling group."
+  description = "Name of the security group for the app auto-scaling group."
   type        = string
 }
 
 variable "db_sg_name" {
-  description = "The name of the security group for the database."
+  description = "Name of the security group for the database."
   type        = string
 }
 
 # Load Balancer Variables
+
 variable "web_lb_name" {
-  description = "The name of the web load balancer."
+  description = "Name of the web load balancer."
   type        = string
 }
 
 variable "app_lb_name" {
-  description = "The name of the app load balancer."
+  description = "Name of the app load balancer."
   type        = string
 }
 
 variable "web_tg_name" {
-  description = "The name of the web target group."
+  description = "Name of the target group for the web instances."
   type        = string
 }
 
 variable "app_tg_name" {
-  description = "The name of the app target group."
+  description = "Name of the target group for the application instances."
   type        = string
 }
 
 # Auto Scaling Group Variables
+
 variable "ami_id" {
   description = "The AMI ID for the instances."
   type        = string
@@ -182,10 +199,56 @@ variable "asg_app_name" {
   type        = string
 }
 
+variable "asg_sg_web_id" {
+  description = "Security group ID for the web ASG."
+  type        = string
+}
+
+variable "asg_sg_app_id" {
+  description = "Security group ID for the app ASG."
+  type        = string
+}
+
+variable "private_subnet1_id" {
+  description = "ID of the first private subnet."
+  type        = string
+}
+
+variable "private_subnet2_id" {
+  description = "ID of the second private subnet."
+  type        = string
+}
+
+variable "public_subnet1_id" {
+  description = "ID of the first public subnet."
+  type        = string
+}
+
+variable "public_subnet2_id" {
+  description = "ID of the second public subnet."
+  type        = string
+}
+
+variable "app_tg_arn" {
+  description = "ARN of the app target group."
+  type        = string
+}
+
+variable "web_tg_arn" {
+  description = "ARN of the web target group."
+  type        = string
+}
+
 # Database Variables
+
 variable "db_subnet_group_name" {
   description = "The name of the database subnet group."
   type        = string
+}
+
+variable "db_subnet_ids" {
+  description = "List of subnet IDs for the database subnet group."
+  type        = list(string)
 }
 
 variable "db_instance_name" {
@@ -208,10 +271,10 @@ variable "db_allocated_storage" {
   type        = number
 }
 
-variable "db_name" {
-  description = "The name of the database."
-  type        = string
-}
+# variable "db_name" {
+#  description = "The name of the database."
+#  type        = string
+# }
 
 variable "db_username" {
   description = "The username for the database."
@@ -223,7 +286,13 @@ variable "db_password" {
   type        = string
 }
 
+variable "db_security_group_id" {
+  description = "The security group ID for the database."
+  type        = string
+}
+
 # Monitoring Variables
+
 variable "log_group_name" {
   description = "The name of the CloudWatch log group."
   type        = string
@@ -244,12 +313,23 @@ variable "cpu_alarm_threshold" {
   type        = number
 }
 
-variable "alarm_action" {
-  description = "The action to take when the alarm is triggered."
+# variable "alarm_action" {
+#   description = "The action to take when the alarm is triggered."
+#   type        = string
+# }
+
+# variable "ok_action" {
+#  description = "The action to take when the alarm is OK."
+#  type        = string
+# }
+
+variable "instance_id" {
+  description = "The ID of the instance to monitor."
   type        = string
 }
 
-variable "ok_action" {
-  description = "The action to take when the alarm is OK."
-  type        = string
+variable "sns_topic_name" {
+  description = "The name of the SNS topic for alarms"
+  default     = "my-sns-topic"
 }
+

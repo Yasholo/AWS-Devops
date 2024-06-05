@@ -1,25 +1,36 @@
-variable "app_instance_name" {
-  description = "Name tag for the app instances."
-  type        = string
-}
-
-variable "web_instance_name" {
-  description = "Name tag for the web instances."
-  type        = string
-}
-
+# Auto Scaling Group Variables
 variable "ami_id" {
-  description = "AMI ID for the instances."
+  description = "The AMI ID for the instances."
   type        = string
 }
 
 variable "instance_type" {
-  description = "Instance type for the instances."
+  description = "The instance type for the instances."
   type        = string
 }
 
 variable "key_name" {
-  description = "Key pair name for SSH access."
+  description = "The key name for SSH access."
+  type        = string
+}
+
+variable "web_instance_name" {
+  description = "The name of the web instances."
+  type        = string
+}
+
+variable "app_instance_name" {
+  description = "The name of the app instances."
+  type        = string
+}
+
+variable "asg_web_name" {
+  description = "The name of the web auto-scaling group."
+  type        = string
+}
+
+variable "asg_app_name" {
+  description = "The name of the app auto-scaling group."
   type        = string
 }
 
@@ -62,3 +73,4 @@ variable "web_tg_arn" {
   description = "ARN of the web target group."
   type        = string
 }
+

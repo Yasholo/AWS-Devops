@@ -1,8 +1,9 @@
-variable "region_name" {
-  description = "The region where AWS resources will be created."
+variable "region" {
+  description = "The AWS region to deploy resources in."
   type        = string
 }
 
+# Network Variables
 variable "vpc_cidr_block" {
   description = "The CIDR block for the VPC."
   type        = string
@@ -24,7 +25,7 @@ variable "public_subnet1_cidr" {
 }
 
 variable "public_subnet1_name" {
-  description = "The name tag for the first public subnet."
+  description = "The name of the first public subnet."
   type        = string
 }
 
@@ -34,7 +35,7 @@ variable "public_subnet2_cidr" {
 }
 
 variable "public_subnet2_name" {
-  description = "The name tag for the second public subnet."
+  description = "The name of the second public subnet."
   type        = string
 }
 
@@ -44,7 +45,7 @@ variable "private_subnet1_cidr" {
 }
 
 variable "private_subnet1_name" {
-  description = "The name tag for the first private subnet."
+  description = "The name of the first private subnet."
   type        = string
 }
 
@@ -54,7 +55,7 @@ variable "private_subnet2_cidr" {
 }
 
 variable "private_subnet2_name" {
-  description = "The name tag for the second private subnet."
+  description = "The name of the second private subnet."
   type        = string
 }
 
@@ -64,7 +65,7 @@ variable "private_db_subnet1_cidr" {
 }
 
 variable "private_db_subnet1_name" {
-  description = "The name tag for the first private database subnet."
+  description = "The name of the first private database subnet."
   type        = string
 }
 
@@ -74,26 +75,30 @@ variable "private_db_subnet2_cidr" {
 }
 
 variable "private_db_subnet2_name" {
-  description = "The name tag for the second private database subnet."
-  type        = string
-}
-
-variable "az_1" {
-  description = "The availability zone for the first subnet."
-  type        = string
-}
-
-variable "az_2" {
-  description = "The availability zone for the second subnet."
+  description = "The name of the second private database subnet."
   type        = string
 }
 
 variable "public_rt_name" {
-  description = "The name tag for the public route table."
+  description = "The name of the public route table."
   type        = string
 }
 
 variable "private_rt_name" {
-  description = "The name tag for the private route tables."
+  description = "The name of the private route table."
+  type        = string
+}
+
+variable "nat-gw-name" {
+  description = "Name for NAT Gateway"
+}
+
+variable "az_1" {
+  description = "The first availability zone."
+  type        = string
+}
+
+variable "az_2" {
+  description = "The second availability zone."
   type        = string
 }
