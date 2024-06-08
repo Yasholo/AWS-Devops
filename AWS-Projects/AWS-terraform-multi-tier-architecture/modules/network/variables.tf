@@ -89,7 +89,7 @@ variable "private_rt_name" {
   type        = string
 }
 
-variable "nat-gw-name" {
+variable "nat_gw_name" {
   description = "Name for NAT Gateway"
 }
 

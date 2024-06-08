@@ -1,6 +1,6 @@
 resource "aws_db_subnet_group" "db_subnet_group" {
   name       = var.db_subnet_group_name
-  subnet_ids = [var.private_db_subnet1_id, var.private_db_subnet2_id]
+  subnet_ids = var.db_subnet_ids
 
   tags = {
     Name = var.db_subnet_group_name
@@ -14,7 +14,6 @@ resource "aws_db_instance" "db_instance" {
   allocated_storage      = var.db_allocated_storage
   parameter_group_name   = "default.mysql5.7"
   multi_az               = true
-  engine                 = "mysql"
   engine_version         = "5.7"
   # name                 = var.db_name
   username               = var.db_username

@@ -6,10 +6,14 @@ $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        echo "<li>{$row['title']} - {$row['description']}</li>";
+        echo '<div class="task">';
+        echo "<h3>{$row['title']}</h3>";
+        echo "<p>{$row['description']}</p>";
+        echo '</div>';
     }
 } else {
-    echo "No tasks found.";
+    echo "<p>No tasks found.</p>";
 }
+
 $conn->close();
 ?>

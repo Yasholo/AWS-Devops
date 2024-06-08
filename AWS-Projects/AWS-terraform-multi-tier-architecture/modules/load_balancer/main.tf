@@ -2,8 +2,8 @@ resource "aws_lb" "web" {
   name               = var.web_lb_name
   internal           = false
   load_balancer_type = "application"
-  security_groups    = modules.security_group.web_security_group_id
-  subnets            = [modules.network.public_subnet1_id, modules.network.public_subnet2_id]
+  security_groups    = var.security_group_web
+  subnets            = var.pub_subnets
 
   tags = {
     Name = var.web_lb_name
@@ -14,8 +14,8 @@ resource "aws_lb" "app" {
   name               = var.app_lb_name
   internal           = false
   load_balancer_type = "application"
-  security_groups    = modules.security_group.app_security_group_id
-  subnets            = [modules.network.private_subnet1_id, modules.network.private_subnet2_id]
+  security_groups    = var.security_group_app
+  subnets            = var.pri_subnets
 
   tags = {
     Name = var.app_lb_name

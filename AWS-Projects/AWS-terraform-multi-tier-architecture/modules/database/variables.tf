@@ -1,51 +1,46 @@
-# Database Variables
-
-variable "db_subnet_group_name" {
-  description = "The name of the database subnet group."
+variable "vpc_id" {
+  description = "The ID of the VPC."
   type        = string
 }
 
-variable "db_subnet_ids" {
-  description = "List of subnet IDs for the database subnet group."
+# Load Balancer Variables
+
+variable "security_group_web" {
+  description = "Web security group ID for the load balancers."
   type        = list(string)
 }
 
-variable "db_instance_name" {
-  description = "The name of the database instance."
+variable "security_group_app" {
+  description = "App security group ID for the load balancers."
+  type        = list(string)
+}
+
+variable "pub_subnets" {
+  description = "A list of public subnet IDs where the ALB will be placed"
+  type        = list(string)
+}
+
+variable "pri_subnets" {
+  description = "A list of private subnet IDs where the ALB will be placed"
+  type        = list(string)
+}
+
+variable "web_lb_name" {
+  description = "Name of the web load balancer."
   type        = string
 }
 
-variable "db_engine" {
-  description = "The database engine (e.g., MySQL, PostgreSQL)."
+variable "app_lb_name" {
+  description = "Name of the app load balancer."
   type        = string
 }
 
-variable "db_instance_class" {
-  description = "The instance type of the database instance."
+variable "web_tg_name" {
+  description = "Name of the target group for the web instances."
   type        = string
 }
 
-variable "db_allocated_storage" {
-  description = "The allocated storage in gigabytes."
-  type        = number
-}
-
-# variable "db_name" {
-#  description = "The name of the database."
-#  type        = string
-# }
-
-variable "db_username" {
-  description = "The username for the database."
-  type        = string
-}
-
-variable "db_password" {
-  description = "The password for the database."
-  type        = string
-}
-
-variable "db_security_group_id" {
-  description = "The security group ID for the database."
+variable "app_tg_name" {
+  description = "Name of the target group for the application instances."
   type        = string
 }

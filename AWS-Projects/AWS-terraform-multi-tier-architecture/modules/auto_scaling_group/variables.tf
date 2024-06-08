@@ -24,15 +24,15 @@ variable "app_instance_name" {
   type        = string
 }
 
-variable "asg_web_name" {
-  description = "The name of the web auto-scaling group."
-  type        = string
-}
+# variable "asg_web_name" {
+#   description = "The name of the web auto-scaling group."
+#   type        = string
+# }
 
-variable "asg_app_name" {
-  description = "The name of the app auto-scaling group."
-  type        = string
-}
+# variable "asg_app_name" {
+#   description = "The name of the app auto-scaling group."
+#   type        = string
+# }
 
 variable "asg_sg_web_id" {
   description = "Security group ID for the web ASG."
@@ -73,4 +73,3 @@ variable "web_tg_arn" {
   description = "ARN of the web target group."
   type        = string
 }
-

@@ -41,8 +41,8 @@ instance_type = "t2.micro"
 key_name = "Jobs"
 web_instance_name = "web-instance"
 app_instance_name = "app-instance"
-asg_web_name = "web-asg"
-asg_app_name = "app-asg"
+# asg_web_name = "web-asg"
+# asg_app_name = "app-asg"
 
 # Database Variables
 db_subnet_group_name = "db-subnet-group"

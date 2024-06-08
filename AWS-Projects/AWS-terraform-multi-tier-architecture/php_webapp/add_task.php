@@ -1,15 +1,20 @@
 <?php
 require_once 'db_connection.php';
 
-$title = $_POST['title'];
-$description = $_POST['description'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $title = $_POST['title'];
+    $description = $_POST['description'];
 
-$sql = "INSERT INTO tasks (title, description) VALUES ('$title', '$description')";
+    $sql = "INSERT INTO tasks (title, description) VALUES (?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('ss', $title, $description);
+    
+    if ($stmt->execute()) {
+        header('Location: index.php');
+    } else {
+        echo "Error: " . $stmt->error;
+    }
 
-if ($conn->query($sql) === TRUE) {
-    header('Location: index.php');
-} else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    $stmt->close();
 }
-$conn->close();
 ?>

@@ -48,34 +48,29 @@ EOF
     sudo apt install -y git
   fi
 
-# Clear the Apache document root if it exists and is not empty
-if [ -d "/var/www/html" ] && [ "$(ls -A /var/www/html)" ]; then
-  echo "Clearing existing content in /var/www/html..." | tee -a "$DEPLOY_LOG"
-  sudo rm -rf /var/www/html/*
-fi
+  # Clear the Apache document root if it exists and is not empty
+  if [ -d "/var/www/html" ] && [ "$(ls -A /var/www/html)" ]; then
+    echo "Clearing existing content in /var/www/html..." | tee -a "$DEPLOY_LOG"
+    sudo rm -rf /var/www/html/*
+  fi
 
-# Clone the web application from GitHub if the directory is empty
-if [ ! -d "/var/www/html" ] || [ ! "$(ls -A /var/www/html)" ]; then
+  # Clone the web application from GitHub
   echo "Cloning web application from GitHub..." | tee -a "$DEPLOY_LOG"
-  sudo git clone https://github.com/Yasholo/php-web-app.git /var/www/html
-fi
+  sudo git clone https://github.com/Yasholo/php-web_app.git /var/www/html
 
   # Set correct permissions for the web directory
   sudo chown -R www-data:www-data /var/www/html
 
-  # Configure Apache to serve index.php as the default file
-  echo "Configuring Apache to serve index.php as the default file..." | tee -a "$DEPLOY_LOG"
-  sudo sed -i 's/DirectoryIndex index.html index.cgi index.pl index.xhtml index.htm/DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm/g' /etc/apache2/mods-enabled/dir.conf
-
-  # Restart Apache to apply the changes
-  echo "Restarting Apache..." | tee -a "$DEPLOY_LOG"
-  sudo systemctl restart apache2
+  # Start and enable Apache HTTP server
+  echo "Starting and enabling Apache..." | tee -a "$DEPLOY_LOG"
+  sudo systemctl start apache2
+  sudo systemctl enable apache2
 
   echo "==== $(date +'%Y-%m-%d %H:%M:%S') Web Application Deployment Completed ===="
 
 } >> "$DEPLOY_LOG" 2>&1
 
-if [ $? -ne 0 ]; thenl
+if [ $? -ne 0 ]; then
   echo "Web application deployment failed. Check the log file for details: $DEPLOY_LOG" | tee -a "$DEPLOY_LOG"
   exit 1
 fi
