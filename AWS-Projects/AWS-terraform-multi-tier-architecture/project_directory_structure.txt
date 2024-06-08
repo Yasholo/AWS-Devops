@@ -1,30 +1,31 @@
-project-directory/
-├── main.tf
-├── variables.tf
-├── outputs.tf
-├── terraform.tfvars
-├── modules/
-│   ├── network/
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   ├── security_group/
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   ├── load_balancer/
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   ├── auto_scaling_group/
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   ├── database/
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   └── monitoring/
-│       ├── main.tf
-│       ├── variables.tf
-│       └── outputs.tf
+    terraform-project/
+    │
+    ├── main.tf            # Main Terraform configuration file
+    ├── variables.tf       # Input variables
+    ├── outputs.tf         # Output variables
+    ├── terraform.tfvars   # Terraform variable values (optional)
+    └── modules/           # Directory for reusable modules (optional)
+        ├── network/
+        │   ├── main.tf
+        │   ├── variables.tf
+        │   └── outputs.tf
+        ├── security_group/
+        │   ├── main.tf
+        │   ├── variables.tf
+        │   └── outputs.tf
+        ├── load_balancer/
+        │   ├── main.tf
+        │   ├── variables.tf
+        │   └── outputs.tf
+        ├── auto_scaling_group/
+        │   ├── main.tf
+        │   ├── variables.tf
+        │   └── outputs.tf
+        ├── database/
+        │   ├── main.tf
+        │   ├── variables.tf
+        │   └── outputs.tf
+        └── monitoring/
+            ├── main.tf
+            ├── variables.tf
+            └── outputs.tf

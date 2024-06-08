@@ -138,7 +138,7 @@ resource "aws_nat_gateway" "nat_gateway1" {
   subnet_id     = aws_subnet.public_subnet1.id
 
   tags = {
-    Name = ${var.nat_gw_name}-1
+    Name = "${var.nat_gw_name}-1"
   }
 
 }
@@ -148,7 +148,7 @@ resource "aws_nat_gateway" "nat_gateway2" {
   subnet_id     = aws_subnet.public_subnet2.id
 
   tags = {
-    Name = ${var.nat_gw_name}-2
+    Name = "${var.nat_gw_name}-2"
   }
 
 }
@@ -176,4 +176,3 @@ resource "aws_eip" "nat_eip2" {
 #  destination_cidr_block = "0.0.0.0/0"
 #  nat_gateway_id         = aws_nat_gateway.nat_gateway2.id
 #}
-

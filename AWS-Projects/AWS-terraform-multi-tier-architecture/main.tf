@@ -1,5 +1,5 @@
 provider "aws" {
-  region = var.aws_region
+  region = var.region
 }
 
 module "network" {
@@ -20,6 +20,7 @@ module "network" {
   private_db_subnet1_name = var.private_db_subnet1_name
   private_db_subnet2_cidr = var.private_db_subnet2_cidr
   private_db_subnet2_name = var.private_db_subnet2_name
+  nat_gw_name = var.nat_gw_name
   az_1 = var.az_1
   az_2 = var.az_2
   public_rt_name = var.public_rt_name
@@ -39,8 +40,10 @@ module "security_group" {
 module "load_balancer" {
   source = "./modules/load_balancer"
   vpc_id = module.network.vpc_id
-  subnets = [module.network.public_subnet1_id, module.network.public_subnet2_id]
-  security_group_id = module.security_group.asg_web_security_group_id
+  pub_subnets            = [module.network.public_subnet1_id, module.network.public_subnet2_id]
+  pri_subnets            = [module.network.private_subnet1_id, module.network.private_subnet2_id]
+  security_group_web     = [module.security_group.asg_web_security_group_id]
+  security_group_app     = [module.security_group.asg_app_security_group_id]
   web_lb_name = var.web_lb_name
   app_lb_name = var.app_lb_name
   web_tg_name = var.web_tg_name
