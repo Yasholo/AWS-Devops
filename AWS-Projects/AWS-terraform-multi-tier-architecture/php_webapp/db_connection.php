@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
-$username = "your_db_username";
-$password = "your_db_password";
+$username = "dbadmin";
+$password = "010password69-=";
 $dbname = "task_manager";
 
 // Create connection

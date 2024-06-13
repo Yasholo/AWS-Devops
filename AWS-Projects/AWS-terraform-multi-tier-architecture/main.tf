@@ -75,7 +75,6 @@ module "database" {
   db_engine = var.db_engine
   db_instance_class = var.db_instance_class
   db_allocated_storage = var.db_allocated_storage
-  # db_name = var.db_name
   db_username = var.db_username
   db_password = var.db_password
   db_security_group_id = module.security_group.db_sg_id
@@ -87,8 +86,6 @@ module "monitoring" {
   log_group_retention = var.log_group_retention
   cpu_alarm_name = var.cpu_alarm_name
   cpu_alarm_threshold = var.cpu_alarm_threshold
-  # alarm_action = var.alarm_action
-  # ok_action = var.ok_action
   instance_id = module.auto_scaling_group.web_instance_ids
   sns_topic_name = var.sns_topic_name
 }

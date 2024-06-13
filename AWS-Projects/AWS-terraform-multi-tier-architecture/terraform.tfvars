@@ -36,13 +36,11 @@ web_tg_name = "web-tg"
 app_tg_name = "app-tg"
 
 # Auto Scaling Group Variables
-ami_id = "ami-04b70fa74e45c3917"
+ami_id = "ami-04b70fa74e45c3917"            #Change this to your ami_id
 instance_type = "t2.micro"
-key_name = "Jobs"
+key_name = "Jobs"                           #Give the name of your private key. (Make sure you have the privat key .pem file in the directory, and refering to it while creating ec2 instance)
 web_instance_name = "web-instance"
 app_instance_name = "app-instance"
-# asg_web_name = "web-asg"
-# asg_app_name = "app-asg"
 
 # Database Variables
 db_subnet_group_name = "db-subnet-group"
@@ -50,8 +48,7 @@ db_instance_name = "my-database"
 db_engine = "mysql"
 db_instance_class = "db.t3.micro"
 db_allocated_storage = 20
-#db_name = "mydb"
-db_username = "dbadmin"
+db_username = "dbadmin"    
 db_password = "010password69-="
 
 # Monitoring Variables

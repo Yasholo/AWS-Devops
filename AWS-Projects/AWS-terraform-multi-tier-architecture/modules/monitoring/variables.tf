@@ -20,16 +20,6 @@ variable "cpu_alarm_threshold" {
   type        = number
 }
 
-# variable "alarm_action" {
-#   description = "The action to take when the alarm is triggered."
-#   type        = string
-# }
-
-# variable "ok_action" {
-#  description = "The action to take when the alarm is OK."
-#  type        = string
-# }
-
 variable "instance_id" {
   description = "The ID of the instance to monitor."
   type        = string

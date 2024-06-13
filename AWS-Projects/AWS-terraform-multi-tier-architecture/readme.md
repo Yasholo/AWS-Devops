@@ -3,10 +3,10 @@
 Create a scalable and robust multi-tier architecture on AWS utilizing Terraform.
 
 ## 📋Index
-- [Overview](#🏁-overview)
-- [Prerequisites](#prerequisites)
+- [Overview](#🔰-overview)
 - [Objective](#🌟-objective)
 - [Key Features and Components](#🌠-key-features-and-components)
+- [Prerequisites](#🛒-prerequisites)
 - [Project Directory Structure](#🧬-project-directory-structure)
 - [Terraform Configuration Files](#⚙️-terraform-configuration-files)
    - [Root Module Files](#🧮-root-module-files)
@@ -41,20 +41,14 @@ Stores and manages application data persistently. Ensures data integrity, consis
 
 *It's the basic plan of this project to create these tiers. Resulting in a Multi-Tier-Project helping us to eficciently run our applications. We will be using a high standard terraform module approach in this project. (you won't find web, app or database module but a variety of other modules which will be creating all these instances for us)*
 
+### Infrastructure Architecture
 
-## Prerequisites
+Below is a diagram of the architecture we will be deploying:
 
-- **AWS Account**: You need an active AWS account to provision resources and services on the AWS cloud platform.
-
-- **AWS Access Credentials**: Obtain AWS access credentials with appropriate permissions to create and manage resources. This involves creating an IAM user with programmatic access and attaching policies that grant necessary permissions.
-
-- **Terraform Installed**: Install Terraform on your local machine or development environment. 
-You can follow this [article on terraform installation](https://medium.com/@Yasholo/terraform-a-guide-ff06bd539040).
-
-- **AWS CLI Installed and Configured**: Install the AWS Command Line Interface (CLI) on your machine and configure it with your AWS access credentials. This allows Terraform to interact with AWS services on your behalf. 
-You can follow this [article on AWS CLI Installation.](https://medium.com/@Yasholo/aws-command-line-interface-cli-install-and-configure-8e70e6831074).
-
-- And lastly some basic knowledge of AWS services (VPC, EC2, RDS, ALB, CloudWatch) and Terraform.
+<p align="center">
+   <img src="./multi-tier-arch.jpg" alt="Project Architecture diagram" /> <br>
+   Architecture Diagram
+</p>
 
 ## 🌟 Objective
 
@@ -70,13 +64,14 @@ You can follow this [article on AWS CLI Installation.](https://medium.com/@Yasho
 
 - **Infrastructure as Code (IaC):** Implement infrastructure deployment and management using Terraform, enabling version-controlled, repeatable, and consistent infrastructure configurations.
 
-
 ## 🌠 Key Features and Components:
 
 ### [Networking](./modules/network/)
 
    * **VPC**: Isolated network for your infrastructure.
    * **Subnets**: Public and private subnets for better segregation.
+   * **internet gateway**: It provide two-way public connectivity to applications running in AWS Regions and/or in Local Zones.
+   * **route tables**: It contains a set of rules, called routes, that determine where network traffic from your subnet or gateway is directed.
 
 ### [Security](./modules/security_group/)
 
@@ -98,6 +93,19 @@ You can follow this [article on AWS CLI Installation.](https://medium.com/@Yasho
 
    * **CloudWatch**: Monitors resources and applications, providing insights and alerting capabilities.
 
+## 🛒 Prerequisites
+
+- **AWS Account**: You need an active AWS account to provision resources and services on the AWS cloud platform.
+
+- **AWS Access Credentials**: Obtain AWS access credentials with appropriate permissions to create and manage resources. This involves creating an IAM user with programmatic access and attaching policies that grant necessary permissions.
+
+- **Terraform Installed**: Install Terraform on your local machine or development environment. 
+You can follow this [article on terraform installation](https://medium.com/@Yasholo/terraform-a-guide-ff06bd539040).
+
+- **AWS CLI Installed and Configured**: Install the AWS Command Line Interface (CLI) on your machine and configure it with your AWS access credentials. This allows Terraform to interact with AWS services on your behalf. 
+You can follow this [article on AWS CLI Installation.](https://medium.com/@Yasholo/aws-command-line-interface-cli-install-and-configure-8e70e6831074).
+
+- And lastly some basic knowledge of AWS services (VPC, EC2, RDS, ALB, CloudWatch) and Terraform.
 
 ## 🧬 Project Directory Structure
 
@@ -177,7 +185,6 @@ The root module serves as the entry point for your Terraform configuration and i
 ### 🗂️ Modules
 
 Modules are self-contained packages of Terraform configurations that are managed as a group. Each module has its own set of Terraform files that define resources, variables, and outputs. Here's a detailed look at each module and its purpose:
-Network Module
 
 ### 🔌 Network Module [🔗](./modules/network/)
 
