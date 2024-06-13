@@ -162,8 +162,6 @@ resource "aws_eip" "nat_eip2" {
 }
 
 
-
-
 #resource "aws_route_table" "private_route_table2" {
 #  vpc_id = aws_vpc.main.id
 #  tags = {
