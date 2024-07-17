@@ -16,7 +16,7 @@ pipeline {
         }
         stage('Run Tests') {
             steps {
-                // Add your test steps here
+                // Not testing anything for now...
             }
         }
         stage('Deploy') {
