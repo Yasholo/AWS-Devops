@@ -141,3 +141,4 @@ Exit mysql after creating the database. Let's move on to the next step.
 
 
 # STUPID AWS!!! GOT STUCK :(
+    ![Error](image-15.png)
