@@ -58,7 +58,7 @@ git push -u origin master
 
     ![Sg-inboud-rule](image-1.png)
 
-2. **Install Docker**: Connect to your created instance and install Docker.
+2. **Install Docker**: Connect to your created instance (I have an instance with ubuntu distros) and install Docker.
 ```bash
 sudo apt update
 sudo apt install docker.io -y
@@ -135,10 +135,23 @@ Exit mysql after creating the database. Let's move on to the next step.
 
         ![Jenkins Interface](image-13.png)
 
+        ![Jenkins-pass](image-16.png)
 
-    - complete the setup wizard, follow all the required steps on the screen and install necessary plugins.
+    - Complete the setup wizard, follow all the required steps on the screen and install necessary plugins.
         ![Plugins](image-14.png)
 
+    - After completing your setup and setting your username and password. Your sign in window will appear!
 
-# STUPID AWS!!! GOT STUCK :(
+        Sign in using the username and password you just created.
+        ![Signin](image-18.png)
+
+        ### Hurray! You have successfully loged into your Jenkins.
+        ![Dashboard](image-19.png)
+
+3. **Create a Jenkins Pipeline**:
+    Now we will create a new pipeline job in Jenkins and configure it to use the Jenkinsfile from our repository.
+
+# STUPID AWS!!! GOT STUCK :( 
+    (Probably due to resources constrain or idk. I don't have time to debug rn.)
     ![Error](image-15.png)
+
