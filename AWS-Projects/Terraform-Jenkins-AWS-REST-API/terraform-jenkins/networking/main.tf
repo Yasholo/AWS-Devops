@@ -1,0 +1,1 @@
+resource "aws_vpc" "proj_1_vpc_

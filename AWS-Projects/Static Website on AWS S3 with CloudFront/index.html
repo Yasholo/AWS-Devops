@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YashKumar - Cloud Portfolio</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #2b2b2b);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        h1 {
+            font-size: 3em;
+            margin: 0;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            animation: fadeIn 2s ease-in-out;
+        }
+        p {
+            font-size: 1.2em;
+            color: #ccc;
+            margin: 10px 0;
+            animation: slideUp 2s ease-in-out;
+        }
+        .btn {
+            display: inline-block;
+            width: 150px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            background: #00ffff;
+            color: #1a1a1a;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #fff;
+            color: #0099ff; 
+            box-shadow: 0 0 15px #00ffff;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes slideUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hey, I'm Yash Kumar</h1>
+        <p>Aspiring Cloud & DevOps Engineer | AWS Enthusiast | AWS Certified Solutions Architect - Associate</p>
+        <a href="https://www.linkedin.com/in/yasholo/" target="_blank" class="btn">Check My Linkedin</a> <br>
+        <a href="https://github.com/yasholo" target="_blank" class="btn">Check My Projects</a> <br>
+        <a href="https://medium.com/@Yasholo" target="_blank" class="btn">Check My Blogs</a>
+    </div>
+</body>
+</html>
