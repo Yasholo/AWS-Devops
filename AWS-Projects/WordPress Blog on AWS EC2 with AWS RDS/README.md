@@ -17,9 +17,9 @@ This project deploys a WordPress blog on an AWS EC2 instance, using RDS for the 
     5. **Security Group**:  
         - Create a new security group (e.g., wordpress-sg).  
         - Add rules:  
-         - SSH (port 22, source: your IP or 0.0.0.0/0 for now—tighten later).  
+         - SSH (port 22, source: your IP or 0.0.0.0/0).  
          - HTTP (port 80, source: 0.0.0.0/0).
-    6. **Launch**: Click “Launch Instance,” note the public IP (e.g., 54.123.45.67).
+    6. **Launch**: Click “Launch Instance,” note the public IP (e.g.,174.129.162.155/).
     ![Ec2](<images/Ec2.png>)
 
 
@@ -80,7 +80,7 @@ This project deploys a WordPress blog on an AWS EC2 instance, using RDS for the 
         sudo systemctl status httpd
         ```
         ![wp-3](images/wp-3.png)
-        
+
         ![wp-4](images/wp-4.png)
 
     4. **Download and Set Up WordPress**:
@@ -114,7 +114,7 @@ This project deploys a WordPress blog on an AWS EC2 instance, using RDS for the 
         - Save (Ctrl+O, Enter, Ctrl+X in nano)
 
 6. **Access and Finalize WordPress**
-    1. **Open Browser**: Go to your EC2 public IP (e.g., http://54.123.45.67).
+    1. **Open Browser**: Go to your EC2 public IP (e.g., http://174.129.162.155/).
             
             If you face an error like: 
             *Php version error*: Your server is running PHP version 5.4.16 but WordPress 6.7.2 requires at least 7.2.24 (Update your php version)
