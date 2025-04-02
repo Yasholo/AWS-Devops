@@ -146,7 +146,7 @@ This project deploys a WordPress blog on an AWS EC2 instance, using RDS for the 
 
 ## Setup Instructions
 - Clone this repo.
-- Launch an EC2 instance (t2.micro, Amazon Linux 2) and RDS (MySQL, db.t2.micro) per AWS docs.
+- Launch an EC2 instance (t2.micro, Amazon Linux 2) and RDS (MySQL, db.t2.micro) as mentioned above, take help from AWS docs.
 - SSH into EC2 and run the install commands from the steps above.
 - Configure `wp-config.php` with your RDS details.
 - Access the EC2 public IP to set up WordPress.
