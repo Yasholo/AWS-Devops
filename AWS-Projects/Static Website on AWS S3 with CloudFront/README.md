@@ -14,7 +14,7 @@ This project hosts a modern, animated personal portfolio website using AWS S3 fo
 
 2. **S3 Setup**: 
 
-    Made an S3 bucket (`my.portfolio.site`)
+    Log into AWS Console, go to S3, create a bucket (`my.portfolio.site`)
         ![bucket](<images/bucket.png>)
 
     Enabled static website hosting
@@ -31,8 +31,29 @@ This project hosts a modern, animated personal portfolio website using AWS S3 fo
         ![public-access-2](<images/pa2.png>)
         ![public-access-3](<images/pa3.png>)
 
+    Set bucket policy (Bucket Policy tab):
+        
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "PublicReadGetObject",
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "s3:GetObject",
+                    "Resource": "arn:aws:s3:::my.portfolio.site/*"
+                }
+            ]
+        }
+
+    Test the S3 URL (e.g., http://my.portfolio.site.s3-website-us-east-1.amazonaws.com).
+        ![static-website-3](<images/static3.png>)
+
+
 
 3. **CloudFront Integration**: 
+        
+    Go to CloudFront, click “Create Distribution.” 
         ![Cf1](<images/cf1.png>)
 
     Configured a CloudFront distribution with the S3 bucket as the origin
@@ -42,7 +63,7 @@ This project hosts a modern, animated personal portfolio website using AWS S3 fo
     optionally added a custom 404 error response to serve `error.html`
         ![Cf4](<images/cf3.png>)
     
-    Deployed it to generate a public URL.
+    Deployed it to generate a public URL. (Wait ~10 minutes, then use the CloudFront URL)
         ![Cf5](<images/cf5.png>)
         ![Cf6](<images/cf6.png>)
         ![Cf7](<images/cf7.png>)
