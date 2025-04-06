@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Simple VPC and Subnet
+Resources:
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: MyVPC
+  MySubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: us-east-1a
+      Tags:
+        - Key: Name
+          Value: MySubnet
+Outputs:
+  VpcId:
+    Description: ID of the VPC
+    Value: !Ref MyVPC
+  SubnetId:
+    Description: ID of the Subnet
+    Value: !Ref MySubnet
