@@ -151,6 +151,9 @@ This project deploys a WordPress blog on an AWS EC2 instance, using RDS for the 
 - Configure `wp-config.php` with your RDS details.
 - Access the EC2 public IP to set up WordPress.
 
+## Outcome
+A functional WordPress blog, showing EC2 and RDS integration.
+
 ## Demo
 Live at: `http://174.129.162.155/` (Might not be live when you read this article, I am attaching the images of the running website.)
 

@@ -83,6 +83,9 @@ This project hosts a modern, animated personal portfolio website using AWS S3 fo
 - Set up CloudFront with the bucket as the origin, optionally add a 404 custom error response pointing to `/error.html`, and deploy.
 - Customize the name and GitHub link in `index.html`.
 
+## Outcome
+A live website hosted on AWS, showing S3 and CloudFront skills.
+
 ## Demo
 
 ![Portfolio-site](images/image.png)
