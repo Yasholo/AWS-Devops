@@ -1,0 +1,24 @@
+name: Deploy to ECS
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    - name: Build, Tag, Push to ECR
+      run: |
+        docker build -t my-flask-app .
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 982534385035.dkr.ecr.us-east-1.amazonaws.com
+        docker tag my-flask-app:latest 982534385035.dkr.ecr.us-east-1.amazonaws.com/my-flask-app:latest
+        docker push 982534385035.dkr.ecr.us-east-1.amazonaws.com/my-flask-app:latest
+    - name: Update ECS Service
+      run: |
+        aws ecs update-service --cluster my-ecs-cluster --service my-flask-service --force-new-deployment
