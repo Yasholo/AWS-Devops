@@ -239,12 +239,10 @@ This project automates deployment of a Python Flask app to AWS ECS (Fargate) usi
 - Portfolio: Link the GitHub repo, demo the live app.
 
 ## Demo
-[Insert ECS public IP or screenshot, e.g., `http://54.321.98.76:5000`]
-
-- output after manually pushing docker image to ecr
+- Output after manually pushing docker image to ecr
     ![imageF](images/imageF.png)
 
-- output using github actions, where I modified the app.py a little.
+- Output using github actions, where I modified the app.py a little.
     ![image32](images/image32.png)
 
 
